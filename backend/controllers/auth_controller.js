@@ -23,10 +23,12 @@ export default class AuthController {
                 })
             }
             const hashpassword = bcrypt.hashSync(password, 7)
-            await User.addUser(mail, login, hashpassword)
+            const user = await User.addUser(mail, login, hashpassword)
+            const token = generateAccessToken(user.user_id,user.user_login)
             return res.status(200).json(
                 {
-                    message: 'Пользователь зарегистрирован'
+                    message: 'Пользователь зарегистрирован',
+                    token: token
                 }
             )
 
