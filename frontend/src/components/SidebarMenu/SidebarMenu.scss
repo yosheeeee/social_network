@@ -1,0 +1,14 @@
+.sidebar_menu{
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  grid-column: 1/2;
+
+  .menu_item{
+    font-size: 19px;
+    color:white;
+    display: flex;
+    align-items: center;
+    gap:10px;
+  }
+}
