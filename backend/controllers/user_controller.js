@@ -2,6 +2,7 @@ import User from "../models/user.js";
 
 
 export default class User_controller {
+    // подписка на пользователя
     static async subscribeUser(req, res) {
         try {
             const current_user = req.current_user
@@ -12,7 +13,7 @@ export default class User_controller {
             return res.status(400)
         }
     }
-
+    // получение диалога пользователя
     static async getDialog(req, res) {
         try {
             const dialog_id = req.params.id
@@ -23,16 +24,17 @@ export default class User_controller {
             return res.status(400)
         }
     }
-
+    // получения всех диалогов пользователя
     static async getUserDialogs(req, res) {
         try {
             const current_user = req.current_user
-
+            let dialogs = await User.getUserDialogs(current_user.id)
+            return res.status(200).json(dialogs)
         } catch (e) {
             return res.status(400)
         }
     }
-
+    // отправка сообщений
     static async sendMessage(req, res) {
         try {
             const current_user_id = req.current_user.id
