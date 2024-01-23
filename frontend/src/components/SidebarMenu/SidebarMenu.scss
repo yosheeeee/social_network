@@ -1,3 +1,4 @@
+@import "../../colors";
 .sidebar_menu{
   display: flex;
   flex-direction: column;
@@ -6,7 +7,7 @@
 
   .menu_item{
     font-size: 19px;
-    color:white;
+    color:$text-color;
     display: flex;
     align-items: center;
     gap:10px;
