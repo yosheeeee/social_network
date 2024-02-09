@@ -1,0 +1,10 @@
+@import "../../colors";
+
+h1 {
+  text-align: center;
+  color: $text-color;
+  font-size: 40px;
+  grid-column: 1/4;
+  margin-top: 50vh;
+  width: 100%;
+}

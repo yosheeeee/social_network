@@ -1,0 +1,56 @@
+@import "./../../colors";
+
+.auth-form {
+  .form-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    button{
+      background: none;
+      color: $text-color;
+      border:none;
+      cursor: pointer;
+      font-size: 20px;
+      text-decoration: underline;
+
+      &[disabled]{
+        text-decoration: none;
+      }
+    }
+  }
+
+  form{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+
+    .input-container{
+      width: 100%;
+      color: $text-color;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: space-between;
+
+      input{
+        outline: none;
+        background: none;
+        border: 1px solid $text-color;
+        color: $text-color;
+        padding: 5px 10px;
+        border-radius: 3px;
+      }
+    }
+
+    input{
+      outline: none;
+      background: none;
+      border: 1px solid $text-color;
+      color: $text-color;
+      padding: 5px 10px;
+      border-radius: 3px;
+    }
+  }
+}

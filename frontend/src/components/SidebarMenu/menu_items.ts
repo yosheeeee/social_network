@@ -15,7 +15,8 @@ let menu_items : SidebarMenuItemProps[] = [
     },
     {
         icon_name: 'fa-user',
-        title: 'Профиль'
+        title: 'Профиль',
+        link: 'auth'
     },
     {
         icon_name: 'fa-gear',

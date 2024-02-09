@@ -1,6 +1,7 @@
-import React from "react";
+import React, {useEffect} from "react";
 import "./SidebarMenu.scss"
 import menu_items from "./menu_items";
+import { Link } from "react-router-dom";
 export interface SidebarMenuProps{
 
 }
@@ -24,7 +25,7 @@ function SidebarMenuItem(props:SidebarMenuItemProps){
     return (
             <div className="menu_item">
                 <i className={"fa-solid "+icon_name}></i>
-                <a href={link ? link : "#"}>{title}</a>
+                <Link to={link ? link : "#"}>{title}</Link>
             </div>
             )
 }

@@ -16,6 +16,7 @@ export default class AuthController {
     static async registration(req, res) {
         try {
             const {login, mail, password} = req.body
+            console.log(req.body)
             const candidate = await User.findUser(mail, login)
             if (candidate.rows.length != 0) {
                 return res.status(400).json({
