@@ -36,5 +36,10 @@
     display: flex;
     align-items: center;
     gap: 18px;
+
+    a.active{
+      text-decoration: underline;
+      text-decoration-color: $main-accent-color;
+    }
   }
 }

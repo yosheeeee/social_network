@@ -19,6 +19,7 @@ export default class AuthController {
             console.log(req.body)
             const candidate = await User.findUser(mail, login)
             if (candidate.rows.length != 0) {
+                console.log(candidate.rows)
                 return res.status(400).json({
                     message: 'Пользователь с таким именем или почтой уже существует'
                 })
@@ -45,12 +46,12 @@ export default class AuthController {
         try {
             const {login, password} = req.body
             const user = await User.findUser('', login)
-            console.log(user)
             if (!user.rows.length) {
                 return res.status(400).json({
                     message: "такой пользователь не найден"
                 })
             }
+            console.log(req.body)
             const validPassword = bcrypt.compareSync(password, user.rows[0].user_password)
             if (!validPassword) {
                 return res.status(400).json({

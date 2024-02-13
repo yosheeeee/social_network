@@ -8,11 +8,13 @@ let menu_items : SidebarMenuItemProps[] = [
     },
     {
         icon_name: 'fa-bell',
-        title: 'Уведомления'
+        title: 'Уведомления',
+        link: 'notifications'
     },
     {
         icon_name: 'fa-comment',
-        title: 'Сообщения'
+        title: 'Сообщения',
+        link: 'messages'
     },
     {
         icon_name: 'fa-user',
@@ -21,7 +23,8 @@ let menu_items : SidebarMenuItemProps[] = [
     },
     {
         icon_name: 'fa-gear',
-        title: "Настройки"
+        title: "Настройки",
+        link: 'settings'
     }
 ]
 

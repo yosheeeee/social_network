@@ -32,7 +32,7 @@ function SidebarMenuItem(props: SidebarMenuItemProps) {
     return (
         <div className="menu_item">
             <i className={"fa-solid " + icon_name}></i>
-            <NavLink to={link ? link : "#"}>{title}</NavLink>
+            <NavLink to={link ? link : "#"} className={navData => navData.isActive ? "active" : ''}>{title}</NavLink>
         </div>
     )
 }

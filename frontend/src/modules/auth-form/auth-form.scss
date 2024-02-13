@@ -52,6 +52,12 @@
         position: absolute;
         right: -30px;
         cursor: pointer;
+
+        &.active{
+          i{
+            color:$main-accent-color;
+          }
+        }
       }
     }
 
@@ -65,7 +71,15 @@
 
       &[type="submit"]{
         margin-top: 20px;
+        cursor: pointer;
       }
+    }
+  }
+
+  .loader{
+    img{
+      max-width: 50px;
+      object-fit: contain;
     }
   }
 }

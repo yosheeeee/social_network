@@ -1,5 +1,13 @@
-import React, {useEffect, useState} from "react";
-import "./auth-form.scss"
+import React, {useEffect, useRef, useState} from "react";
+import axios from "axios";
+import "./auth-form.scss";
+import {BACKEND_PATH} from "../../constants";
+import Loader from "../../images/loader.gif";
+
+interface ResponseResult {
+    message: string,
+    token?: string
+}
 
 
 export function AuthForm() {
@@ -24,8 +32,11 @@ export function AuthForm() {
             }
         ]
     }
+
     let [is_register, set_is_register] = useState(false)
     let [form_type, set_form_type] = useState("login")
+    let [loading, set_loading] = useState(false)
+
     useEffect(() => {
         if (is_register) {
             set_form_type("registration")
@@ -33,6 +44,38 @@ export function AuthForm() {
             set_form_type('login')
         }
     }, [is_register])
+
+    function sumbitForm(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        let target = e.target as typeof e.target & {
+            login: { value: string },
+            mail: { value: string },
+            password: { value: string }
+        }
+        let form_data = {
+            login: target.login.value,
+            password: target.password.value
+        }
+        let url = BACKEND_PATH + "/auth/"
+        if (is_register) {
+            // @ts-ignore
+            form_data.mail = target.mail.value
+            url += "registration"
+        } else {
+            url += "login"
+        }
+        set_loading(true)
+        axios.post(url, form_data)
+            .then(data => {
+                set_loading(false)
+                let auth_data = data.data as ResponseResult
+                console.log(auth_data)
+            })
+            .catch(e => {
+                console.log(e)
+                set_loading(false)
+            })
+    }
 
     return (
         <div className="auth-form">
@@ -46,11 +89,14 @@ export function AuthForm() {
                                 is_register={is_register}
                                 set_is_register={set_is_register}/>
             </div>
-            <form data-action={form_type}>
+            <form data-action={form_type}
+                  onSubmit={sumbitForm}>
                 {is_register && <AuthFormInput {...inputs.registration}/>}
                 {inputs.login.map(inp => <AuthFormInput {...inp}/>)}
                 <input type="submit"
                        value={is_register ? "Зарегистрироватсья" : "Войти"}/>
+                <div className="loader">{loading && <img src={Loader}
+                                                         alt="loader"/>}</div>
             </form>
         </div>
     )
@@ -64,22 +110,37 @@ interface AuthFormInputProps {
 }
 
 function AuthFormInput({label_text, input_type, input_name}: AuthFormInputProps) {
+
     let [input_type_state, set_input_type] = useState(input_type);
-    function showPassword(){
-        function mouseDown(e : React.MouseEvent<HTMLDivElement>){
-            if (e.button == 0) set_input_type('text')
+    let eyeRef = useRef<HTMLDivElement>(null)
+
+    function showPassword() {
+        function mouseDown(e: React.MouseEvent<HTMLDivElement>) {
+            if (e.button == 0) {
+                set_input_type('text')
+                // @ts-ignore
+                eyeRef.current.classList.add('active')
+            }
         }
-        function mouseUp(e: React.MouseEvent<HTMLDivElement>){
+
+        function mouseUp(e: React.MouseEvent<HTMLDivElement>) {
             set_input_type(input_type)
+            // @ts-ignore
+            eyeRef.current.classList.remove('active')
         }
+
         return (
             <>
-                <div className="show-password-btn" onMouseDown={mouseDown} onMouseUp={mouseUp}>
+                <div className="show-password-btn"
+                     onMouseDown={mouseDown}
+                     onMouseUp={mouseUp}
+                     ref={eyeRef}>
                     <i className="fa-regular fa-eye"></i>
                 </div>
             </>
         )
     }
+
     return (
         <div className='input-container'>
             <label htmlFor={input_name}>{label_text}</label>
