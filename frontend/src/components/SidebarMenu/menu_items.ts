@@ -4,6 +4,7 @@ let menu_items : SidebarMenuItemProps[] = [
     {
         icon_name: "fa-house",
         title: 'Главная',
+        link: '/'
     },
     {
         icon_name: 'fa-bell',

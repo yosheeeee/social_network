@@ -1,31 +1,38 @@
-import React, {useEffect} from "react";
+import React from "react";
 import "./SidebarMenu.scss"
 import menu_items from "./menu_items";
-import { Link } from "react-router-dom";
-export interface SidebarMenuProps{
+import {NavLink} from "react-router-dom";
+import Logo from "../../images/main-logo.svg";
+
+export interface SidebarMenuProps {
 
 }
 
-export interface SidebarMenuItemProps{
+export interface SidebarMenuItemProps {
     icon_name: string,
     title: string,
-    link?:string,
+    link?: string,
 }
 
-export  function SidebarMenu(props: SidebarMenuProps){
+export function SidebarMenu(props: SidebarMenuProps) {
     return (
         <div className="sidebar_menu">
+            <div className="main-logo">
+                <img src={Logo}
+                     alt="main-logo"/>
+                <p>Minds</p>
+            </div>
             {menu_items.map(item => SidebarMenuItem(item))}
         </div>
     )
 }
 
-function SidebarMenuItem(props:SidebarMenuItemProps){
+function SidebarMenuItem(props: SidebarMenuItemProps) {
     const {icon_name, title, link} = props
     return (
-            <div className="menu_item">
-                <i className={"fa-solid "+icon_name}></i>
-                <Link to={link ? link : "#"}>{title}</Link>
-            </div>
-            )
+        <div className="menu_item">
+            <i className={"fa-solid " + icon_name}></i>
+            <NavLink to={link ? link : "#"}>{title}</NavLink>
+        </div>
+    )
 }

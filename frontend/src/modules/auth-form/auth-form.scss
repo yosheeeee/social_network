@@ -1,38 +1,43 @@
 @import "./../../colors";
 
 .auth-form {
+  width: fit-content;
+  margin: 0 auto;
   .form-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 5px;
 
     button{
       background: none;
-      color: $text-color;
+      color: rgba(255, 255, 255, 0.34);
       border:none;
       cursor: pointer;
       font-size: 20px;
-      text-decoration: underline;
 
       &[disabled]{
-        text-decoration: none;
+        color:$text-color;
       }
     }
   }
 
   form{
+    margin-top: 20px;
     display: flex;
     align-items: center;
     flex-direction: column;
-    gap: 5px;
+    gap: 12px;
 
     .input-container{
       width: 100%;
+      min-width: max-content;
       color: $text-color;
       display: flex;
       align-items: center;
       gap: 10px;
       justify-content: space-between;
+      position: relative;
 
       input{
         outline: none;
@@ -41,6 +46,12 @@
         color: $text-color;
         padding: 5px 10px;
         border-radius: 3px;
+      }
+
+      .show-password-btn{
+        position: absolute;
+        right: -30px;
+        cursor: pointer;
       }
     }
 
@@ -51,6 +62,10 @@
       color: $text-color;
       padding: 5px 10px;
       border-radius: 3px;
+
+      &[type="submit"]{
+        margin-top: 20px;
+      }
     }
   }
 }

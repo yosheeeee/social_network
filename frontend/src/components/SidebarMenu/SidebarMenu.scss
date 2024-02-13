@@ -1,15 +1,40 @@
 @import "../../colors";
-.sidebar_menu{
+
+.sidebar_menu {
   display: flex;
   flex-direction: column;
-  gap:10px;
+  gap: 10px;
   grid-column: 1/2;
 
-  .menu_item{
-    font-size: 19px;
-    color:$text-color;
+  .main-logo {
+    margin-left: -15px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap:10px;
+    gap: 10px;
+    font-size: 20px;
+    p{
+      font-family: "Paytone One", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    };
+
+    img {
+      width: 50px;
+      object-fit: contain;
+    }
+  }
+
+  .menu_item {
+    i {
+      min-width: 22px;
+      text-align: center;
+    }
+
+    font-size: 19px;
+    color: $text-color;
+    display: flex;
+    align-items: center;
+    gap: 18px;
   }
 }
