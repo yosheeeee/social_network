@@ -5,6 +5,11 @@ h1#not-found {
   color: $text-color;
   font-size: 40px;
   grid-column: 1/4;
-  margin-top: 50vh;
+  margin-top: 40vh;
   width: 100%;
+}
+.on-main{
+  margin: 0 auto;
+  grid-column: 1/4;
+  color: $main-accent-color;
 }
