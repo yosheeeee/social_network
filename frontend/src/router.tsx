@@ -5,6 +5,7 @@ import {AuthForm} from "./modules/auth-form/auth-form";
 import {ErrorPage} from "./pages/404/404";
 import App from "./App";
 import {Feed} from "./pages/feed/feed";
+import UserPage from "./pages/UserPage/userPage";
 const routes : RouteObject[] = [
     {
         path: '/',
@@ -18,6 +19,10 @@ const routes : RouteObject[] = [
             {
                 path : 'auth',
                 element: <AuthForm/>
+            },
+            {
+                path: 'user/:id',
+                element: <UserPage/>
             }
         ]
     }

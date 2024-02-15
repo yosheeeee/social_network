@@ -30,7 +30,8 @@ export default class AuthController {
             return res.status(200).json(
                 {
                     message: 'Пользователь зарегистрирован',
-                    token: token
+                    token: token,
+                    id: user.use_id
                 }
             )
 
@@ -59,7 +60,7 @@ export default class AuthController {
                 })
             }
             const token = generateAccessToken(user.rows[0].user_id, user.rows[0].user_login)
-            return res.json({token: token})
+            return res.json({token: token, id: user.rows[0].user_id})
         } catch (e) {
 
             console.log(e)

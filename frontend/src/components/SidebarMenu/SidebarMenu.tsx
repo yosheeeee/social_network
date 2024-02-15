@@ -1,8 +1,9 @@
 import React from "react";
 import "./SidebarMenu.scss"
-import menu_items from "./menu_items";
 import {NavLink} from "react-router-dom";
 import Logo from "../../images/main-logo.svg";
+import useNavLinks from "../../hooks/useNavLinks";
+import {useTypeSelector} from "../../hooks/useTypeSelector";
 
 export interface SidebarMenuProps {
 
@@ -15,6 +16,7 @@ export interface SidebarMenuItemProps {
 }
 
 export function SidebarMenu(props: SidebarMenuProps) {
+    let menu_items = useNavLinks(useTypeSelector(state => state.user))
     return (
         <div className="sidebar_menu">
             <div className="main-logo">

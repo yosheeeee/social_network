@@ -3,10 +3,18 @@ import axios from "axios";
 import "./auth-form.scss";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../../images/loader.gif";
+import {useTypeSelector} from "../../hooks/useTypeSelector";
+import {useDispatch} from "react-redux";
+import {AuthFromActionType, AuthFromActionTypes} from "../../store/reducers/authForm/types";
+import {Dispatch} from "redux";
+import {UserAction, UserActionTypes} from "../../store/reducers/userReducer/types";
+import {useNavigate} from "react-router-dom";
+import {useLocalStorage} from "../../hooks/useLocalStorage";
 
 interface ResponseResult {
     message: string,
-    token?: string
+    token?: string,
+    id?: number
 }
 
 
@@ -32,18 +40,25 @@ export function AuthForm() {
             }
         ]
     }
-
-    let [is_register, set_is_register] = useState(false)
-    let [form_type, set_form_type] = useState("login")
-    let [loading, set_loading] = useState(false)
+    let {is_register, form_type, loading} = useTypeSelector(state => state.authForm)
+    let loadingDispatch: Dispatch<AuthFromActionType> = useDispatch()
+    let authUserDispatch: Dispatch<UserAction> = useDispatch()
+    let [userCookie , setUserCookie] = useLocalStorage("user", null)
+    let user  = useTypeSelector(state => state.user)
+    let navigate = useNavigate()
 
     useEffect(() => {
-        if (is_register) {
-            set_form_type("registration")
-        } else {
-            set_form_type('login')
+        if (user.isLoggedIn){
+            navigate('/')
         }
-    }, [is_register])
+    }, []);
+
+    useEffect(() => {
+        console.log(user)
+        if (user.isLoggedIn){
+            navigate('/user/'+user.id)
+        }
+    },[user])
 
     function sumbitForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -64,16 +79,19 @@ export function AuthForm() {
         } else {
             url += "login"
         }
-        set_loading(true)
+        loadingDispatch({type: AuthFromActionTypes.SET_LOADING, payload: true})
         axios.post(url, form_data)
             .then(data => {
-                set_loading(false)
+                loadingDispatch({type: AuthFromActionTypes.SET_LOADING, payload: false})
                 let auth_data = data.data as ResponseResult
+                if(data.status == 200){
+                    authUserDispatch({type: UserActionTypes.AUTH_USER , payload: {token: auth_data.token as string, id : auth_data.id as number}})
+                }
                 console.log(auth_data)
             })
             .catch(e => {
                 console.log(e)
-                set_loading(false)
+                loadingDispatch({type: AuthFromActionTypes.SET_LOADING, payload: false})
             })
     }
 
@@ -83,11 +101,11 @@ export function AuthForm() {
                 <AuthTypeButton button_text={"Вход"}
                                 auth_type={false}
                                 is_register={is_register}
-                                set_is_register={set_is_register}/>
+                />
                 <AuthTypeButton button_text={"Регистрация"}
                                 auth_type={true}
                                 is_register={is_register}
-                                set_is_register={set_is_register}/>
+                />
             </div>
             <form data-action={form_type}
                   onSubmit={sumbitForm}>
@@ -157,13 +175,13 @@ interface AuthTypeButtonProps {
     button_text: string,
     auth_type: boolean,
     is_register: boolean,
-    set_is_register: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-function AuthTypeButton({button_text, auth_type, set_is_register, is_register}: AuthTypeButtonProps) {
+function AuthTypeButton({button_text, auth_type, is_register}: AuthTypeButtonProps) {
+    let dispatch: Dispatch<AuthFromActionType> = useDispatch()
     return (
         <button disabled={auth_type == is_register}
-                onClick={() => set_is_register(auth_type)}>
+                onClick={() => dispatch({type: AuthFromActionTypes.SET_FORM_TYPE, payload: auth_type})}>
             {button_text}
         </button>
     )
