@@ -10,5 +10,6 @@ user_router.post('/subscribe',AuthMiddleware,User_controller.subscribeUser)
 user_router.get('/dialog/:id',AuthMiddleware,checkDialogMiddleware,User_controller.getDialog)
 user_router.get('/dialogs',AuthMiddleware,User_controller.getUserDialogs)
 user_router.post('/message',AuthMiddleware,User_controller.sendMessage)
+user_router.get('/:id',User_controller.getUser)
 
 export default user_router

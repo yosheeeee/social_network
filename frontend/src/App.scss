@@ -29,4 +29,14 @@ body{
     margin: 0 auto;
     margin-top: 50px;
   }
+
+  .color-blue{
+    color: $main-accent-color;
+  }
+
+  .button.rounded.accent-color{
+    padding: 5px 10px;
+    border: 1px solid $main-accent-color;
+    border-radius: 15px;
+  }
 }

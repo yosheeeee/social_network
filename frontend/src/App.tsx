@@ -1,10 +1,7 @@
 import React, {useEffect} from 'react';
-import logo from './logo.svg';
 import './App.scss';
 import {SidebarMenu} from "./components/SidebarMenu/SidebarMenu";
-import {AuthForm} from "./modules/auth-form/auth-form";
 import {Outlet, RouterProvider} from "react-router-dom";
-import {router} from "./router";
 import {useLocalStorage} from "./hooks/useLocalStorage";
 import {useTypeSelector} from "./hooks/useTypeSelector";
 import {useDispatch} from "react-redux";
