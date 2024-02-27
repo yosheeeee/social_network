@@ -15,7 +15,7 @@ const generateAccessToken = (id, login) => {
 export default class AuthController {
     static async registration(req, res) {
         try {
-            const {login, mail, password} = req.body
+            const {login, mail, password,name} = req.body
             console.log(req.body)
             const candidate = await User.findUser(mail, login)
             if (candidate.rows.length != 0) {
@@ -25,13 +25,13 @@ export default class AuthController {
                 })
             }
             const hashpassword = bcrypt.hashSync(password, 7)
-            const user = await User.addUser(mail, login, hashpassword)
+            const user = await User.addUser(mail, login, hashpassword,name)
             const token = generateAccessToken(user.user_id,user.user_login)
             return res.status(200).json(
                 {
                     message: 'Пользователь зарегистрирован',
                     token: token,
-                    id: user.use_id
+                    id: user.user_id
                 }
             )
 

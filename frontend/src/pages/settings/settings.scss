@@ -1,0 +1,64 @@
+@import "../../colors";
+
+#settings-page {
+  #loader {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  h1{
+    text-align: center;
+  }
+
+  #settings {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+
+    .input-container {
+      width: 70%;
+      display: grid;
+      grid-template-columns: 3fr 7fr;
+
+      input {
+        outline: none;
+        background: none;
+        border: 1px solid $text-color;
+        color: $text-color;
+        padding: 5px 10px;
+        border-radius: 3px;
+
+        &[type="submit"] {
+          margin-top: 20px;
+          cursor: pointer;
+        }
+      }
+    }
+
+    #password-checker{
+      padding: 5px 10px;
+      color: $text-color;
+      border-radius: 3px;
+      min-width: 181px;
+      text-align: center;
+
+      &.correct{
+        background-color: $good-color;
+      }
+
+      &.wrong{
+        background-color: $warning-color;
+      }
+    }
+  }
+
+  .buttons{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 15% 0;
+  }
+}

@@ -24,22 +24,22 @@ export default function useNavLinks(user: UserState){
             icon_name: 'fa-user',
             title: 'Профиль',
             link: user.isLoggedIn ? 'user/'+user.id : 'auth'
-        },
-        {
-            icon_name: 'fa-gear',
-            title: "Настройки",
-            link: 'settings'
         }
     ])
 
     useEffect(() => {
-        if (user.isLoggedIn){
-            menu_items[3].link = 'user/'+user.id
+        if(user.isLoggedIn){
+            set_menu_items(prevState => {
+                prevState[3].link = 'user/'+user.id
+                return prevState
+            })
         }else{
-            menu_items[3].link = 'auth'
+            set_menu_items(prevState => {
+                prevState[3].link ='auth'
+                return prevState
+            })
         }
+    }, [user]);
 
-    },[user.isLoggedIn])
-
-    return menu_items
+    return {menu_items,set_menu_items}
 }

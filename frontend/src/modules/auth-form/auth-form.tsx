@@ -19,14 +19,19 @@ interface ResponseResult {
 
 
 export function AuthForm() {
-    let inputs: { registration: AuthFormInputProps, login: AuthFormInputProps[] } = {
-        registration:
+    let inputs: { registration: AuthFormInputProps[], login: AuthFormInputProps[] } = {
+        registration: [
+            {
+                label_text: 'Имя',
+                input_type: 'text',
+                input_name: 'name'
+            },
             {
                 label_text: 'Почта',
                 input_name: 'mail',
                 input_type: 'email'
             }
-        ,
+        ],
         login: [
             {
                 label_text: "Логин",
@@ -43,29 +48,30 @@ export function AuthForm() {
     let {is_register, form_type, loading} = useTypeSelector(state => state.authForm)
     let loadingDispatch: Dispatch<AuthFromActionType> = useDispatch()
     let authUserDispatch: Dispatch<UserAction> = useDispatch()
-    let [userCookie , setUserCookie] = useLocalStorage("user", null)
-    let user  = useTypeSelector(state => state.user)
+    let [userCookie, setUserCookie] = useLocalStorage("user", null)
+    let user = useTypeSelector(state => state.user)
     let navigate = useNavigate()
 
     useEffect(() => {
-        if (user.isLoggedIn){
+        if (user.isLoggedIn) {
             navigate('/')
         }
     }, []);
 
     useEffect(() => {
         console.log(user)
-        if (user.isLoggedIn){
-            navigate('/user/'+user.id)
+        if (user.isLoggedIn) {
+            navigate('/user/' + user.id)
         }
-    },[user])
+    }, [user])
 
     function sumbitForm(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         let target = e.target as typeof e.target & {
             login: { value: string },
             mail: { value: string },
-            password: { value: string }
+            password: { value: string },
+            name: {value : string}
         }
         let form_data = {
             login: target.login.value,
@@ -75,6 +81,8 @@ export function AuthForm() {
         if (is_register) {
             // @ts-ignore
             form_data.mail = target.mail.value
+            // @ts-ignore
+            form_data.name = target.name.value
             url += "registration"
         } else {
             url += "login"
@@ -84,10 +92,13 @@ export function AuthForm() {
             .then(data => {
                 loadingDispatch({type: AuthFromActionTypes.SET_LOADING, payload: false})
                 let auth_data = data.data as ResponseResult
-                if(data.status == 200){
-                    authUserDispatch({type: UserActionTypes.AUTH_USER , payload: {token: auth_data.token as string, id : auth_data.id as number}})
+                if (data.status == 200) {
+                    console.log(auth_data)
+                    authUserDispatch({
+                        type: UserActionTypes.AUTH_USER,
+                        payload: {token: auth_data.token as string, id: auth_data.id as number}
+                    })
                 }
-                console.log(auth_data)
             })
             .catch(e => {
                 console.log(e)
@@ -109,7 +120,7 @@ export function AuthForm() {
             </div>
             <form data-action={form_type}
                   onSubmit={sumbitForm}>
-                {is_register && <AuthFormInput {...inputs.registration}/>}
+                {is_register && inputs.registration.map(input => <AuthFormInput {...input}/>) }
                 {inputs.login.map(inp => <AuthFormInput {...inp}/>)}
                 <input type="submit"
                        value={is_register ? "Зарегистрироватсья" : "Войти"}/>

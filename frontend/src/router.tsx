@@ -6,6 +6,7 @@ import {ErrorPage} from "./pages/404/404";
 import App from "./App";
 import {Feed} from "./pages/feed/feed";
 import UserPage from "./pages/UserPage/userPage";
+import Settings from "./pages/settings/settings";
 const routes : RouteObject[] = [
     {
         path: '/',
@@ -23,6 +24,10 @@ const routes : RouteObject[] = [
             {
                 path: 'user/:id',
                 element: <UserPage/>
+            },
+            {
+                path:'settings',
+                element: <Settings/>
             }
         ]
     }

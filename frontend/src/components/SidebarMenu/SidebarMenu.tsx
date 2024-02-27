@@ -16,7 +16,8 @@ export interface SidebarMenuItemProps {
 }
 
 export function SidebarMenu(props: SidebarMenuProps) {
-    let menu_items = useNavLinks(useTypeSelector(state => state.user))
+    let user = useTypeSelector(state => state.user)
+    let {menu_items,set_menu_items} = useNavLinks(user)
     return (
         <div className="sidebar_menu">
             <div className="main-logo">
@@ -25,16 +26,19 @@ export function SidebarMenu(props: SidebarMenuProps) {
                 <p>Minds</p>
             </div>
             {menu_items.map(item => SidebarMenuItem(item))}
+            {user.isLoggedIn && SidebarMenuItem({ icon_name:"fa-gear", title:"Настройки", link:"settings"})}
         </div>
     )
 }
 
-function SidebarMenuItem(props: SidebarMenuItemProps) {
-    const {icon_name, title, link} = props
-    return (
-        <div className="menu_item">
-            <i className={"fa-solid " + icon_name}></i>
-            <NavLink to={link ? link : "#"} className={navData => navData.isActive ? "active" : ''}>{title}</NavLink>
-        </div>
-    )
+function SidebarMenuItem(props: SidebarMenuItemProps | false) {
+    if (props != false){
+        const {icon_name, title, link} = props
+        return (
+            <div className="menu_item">
+                <i className={"fa-solid " + icon_name}></i>
+                <NavLink to={link ? link : "#"} className={navData => navData.isActive ? "active" : ''}>{title}</NavLink>
+            </div>
+        )
+    }
 }

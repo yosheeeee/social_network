@@ -10,9 +10,9 @@ export default class User {
         return db.query('SELECT * FROM users WHERE user_id = $1',[user_id])
     }
 
-    static async addUser(user_mail, user_login, password) {
-        const user = await db.query('INSERT INTO users (user_mail,user_login,user_password) values ($1,$2,$3) RETURNING *',
-            [user_mail, user_login, password])
+    static async addUser(user_mail, user_login, password,user_name) {
+        const user = await db.query('INSERT INTO users (user_mail,user_login,user_password,user_name) values ($1,$2,$3,$4) RETURNING *',
+            [user_mail, user_login, password,user_name])
         return user.rows[0]
     }
 

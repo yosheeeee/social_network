@@ -16,7 +16,7 @@ type UserPageParams = {
     id: string | undefined
 }
 
-interface UserData {
+export interface UserData {
     user_name: string | null,
     user_login: string | null,
 }
@@ -37,7 +37,6 @@ export default function UserPage() {
         axios.get(BACKEND_PATH + '/user/' + userPageParams.id)
             .then(res => res.data as UserData)
             .then(data => {
-                console.log(data)
                 setUserData(data)
                 setLoading(false)
             })
@@ -60,6 +59,9 @@ export default function UserPage() {
                             <p className="color-blue">@{userData.user_login}</p>
                         </div>
                         {parseInt(userPageParams.id as string) == user.id && <EditProfileButton/>}
+                        {parseInt(userPageParams.id as string) != user.id &&
+                           <SubscribeToUser subscribe_to_id={parseInt(userPageParams.id as string)} current_user_id={user.id}>Подписаться</SubscribeToUser>
+                        }
                     </div>
                 </div>
             </>}
@@ -67,8 +69,21 @@ export default function UserPage() {
     )
 }
 
-function EditProfileButton(){
+function SubscribeToUser({subscribe_to_id,current_user_id,children}: {children: any,subscribe_to_id : number , current_user_id: number}){
+    function onClick(){
+
+    }
+
     return (
-        <Link to={'/settings'} className="edit-profile-link button rounded accent-color">Редактировать профиль</Link>
+        <>
+            <button className="button rounded accent-color edit-profile-link" onClick={onClick}>{children}</button>
+        </>
+    )
+}
+
+function EditProfileButton() {
+    return (
+        <Link to={'/settings'}
+              className="edit-profile-link button rounded accent-color">Редактировать профиль</Link>
     )
 }
