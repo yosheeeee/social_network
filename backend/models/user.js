@@ -1,6 +1,16 @@
 import {db} from "../db.js";
 
+
 export default class User {
+
+    static async changePassword(new_password,user_id){
+        await db.query('UPDATE users SET user_password = $1 WHERE user_id=$2',[new_password,user_id])
+    }
+
+    static async ChangeUserData(user_id, userdata){
+        await db.query('UPDATE users SET user_login = $2,user_name = $3, user_mail = $4 WHERE user_id=$1',[user_id,userdata.login,userdata.username,userdata.usermail])
+    }
+
     static async findUser(user_mail, user_login) {
         return db.query('SELECT * FROM users WHERE user_login = $1 OR user_mail = $2',
             [user_login, user_mail])
@@ -16,9 +26,20 @@ export default class User {
         return user.rows[0]
     }
 
-    static async subscribeUser(user_from_id, user_to_id) {
+    static async checkSubscribe(user_from_id, user_to_id){
+        console.log(user_from_id,user_to_id)
         let user_subscribtion = await db.query('SELECT * FROM user_subscribings WHERE user_id_from = $1 AND user_id_to = $2', [user_from_id, user_to_id])
-        if (user_subscribtion.rows.length != 0) {
+        console.log(user_subscribtion)
+        return user_subscribtion.rows.length != 0
+    }
+
+    static async unsubscribeUser(user_from_id, user_to_id){
+        return await db.query('DELETE FROM user_subscribings WHERE user_id_from = $1 AND user_id_to = $2',[user_from_id,user_to_id])
+    }
+
+    static async subscribeUser(user_from_id, user_to_id) {
+        let checkRes = await User.checkSubscribe(user_from_id, user_to_id)
+        if (checkRes) {
             return {
                 message: "User already subscribed",
                 code: 400

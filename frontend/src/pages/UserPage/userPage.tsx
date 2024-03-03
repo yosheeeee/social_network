@@ -3,7 +3,7 @@ import {Link, Params, useParams} from "react-router-dom";
 import {useTypeSelector} from "../../hooks/useTypeSelector";
 import {useDispatch} from "react-redux";
 import {Dispatch} from "redux";
-import {UserAction, UserActionTypes} from "../../store/reducers/userReducer/types";
+import {UserAction, UserActionTypes, UserState} from "../../store/reducers/userReducer/types";
 import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../../components/Loader/Loader";
@@ -19,6 +19,7 @@ type UserPageParams = {
 export interface UserData {
     user_name: string | null,
     user_login: string | null,
+    user_mail?: string | null
 }
 
 export default function UserPage() {
@@ -31,6 +32,7 @@ export default function UserPage() {
     const userPageParams = useParams<UserPageParams>()
     let [loading, setLoading] = useState(false)
     let [userData, setUserData] = useState<UserData>({user_name: null, user_login: null})
+    let [userImageSrc , setUserImageSrc] = useState("")
 
     useEffect(() => {
         setLoading(true)
@@ -38,12 +40,17 @@ export default function UserPage() {
             .then(res => res.data as UserData)
             .then(data => {
                 setUserData(data)
-                setLoading(false)
             })
             .catch(e => {
                 console.log(e)
-                setLoading(false)
             })
+        axios.get(BACKEND_PATH + '/user/image/'+userPageParams.id)
+            .then(res => res.data)
+            .then(data => {
+                console.log(data)
+                setUserImageSrc(data.file_src)
+            })
+        setLoading(false)
     }, [userPageParams]);
 
     return (
@@ -54,13 +61,13 @@ export default function UserPage() {
                     <img src={UserBackground} className="header-background"/>
                     <div className="header-data">
                         <div className="user-data">
-                            <UserImage file_src={UserDefaultImage as string}/>
+                            <UserImage file_src={BACKEND_PATH + '/static'+userImageSrc}/>
                             <p>{userData.user_name}</p>
                             <p className="color-blue">@{userData.user_login}</p>
                         </div>
                         {parseInt(userPageParams.id as string) == user.id && <EditProfileButton/>}
                         {parseInt(userPageParams.id as string) != user.id &&
-                           <SubscribeToUser subscribe_to_id={parseInt(userPageParams.id as string)} current_user_id={user.id}>Подписаться</SubscribeToUser>
+                           <SubscribeToUser user_id={parseInt(userPageParams.id as string)} current_user={user}/>
                         }
                     </div>
                 </div>
@@ -69,14 +76,65 @@ export default function UserPage() {
     )
 }
 
-function SubscribeToUser({subscribe_to_id,current_user_id,children}: {children: any,subscribe_to_id : number , current_user_id: number}){
+function SubscribeToUser({user_id, current_user}: {user_id: number, current_user:UserState}){
+    let [button_text,set_button_text] = useState<any>("")
+    let [isSubscribe, set_is_subscribe] = useState(false)
     function onClick(){
-
+        set_button_text(<Loader/>)
+        if (!isSubscribe){
+            axios.post(BACKEND_PATH+'/user/subscribe',{
+                        user_id:user_id
+                },
+                {
+                    headers:{
+                        'Authorization': 'Bearer ' + current_user.token
+                    }
+                }
+            )
+                .then(res =>res.data)
+                .then(data => {
+                    set_button_text("Отписаться")
+                    set_is_subscribe(true)
+                })
+                .catch(e => {
+                    console.log(e)
+                    set_button_text("Ошибка подписки")
+                })
+        }
+        else{
+            axios.delete(BACKEND_PATH+'/user/subscribe/'+current_user.id+'/'+user_id,{
+                headers:{
+                    'Authorization': 'Bearer ' + current_user.token
+                }
+            }).then(data => {
+                set_is_subscribe(false)
+                set_button_text("Подписаться")
+            }).catch(e => {
+                console.log(e)
+                set_button_text("Ошибка отписки")
+            })
+        }
     }
+
+    useEffect(() => {
+        set_button_text(<Loader/>)
+        axios.get(BACKEND_PATH+'/user/checksubscribe/'+current_user.id+'/'+user_id)
+            .then(res => res.data)
+            .then(data=> {
+                set_is_subscribe(data.result)
+                console.log(data)
+                if (data.result){
+                    set_button_text("Отписаться")
+                }else{
+                    set_button_text("Подписаться")
+                }
+            })
+            .catch(e => console.log(e))
+    }, [user_id, current_user]);
 
     return (
         <>
-            <button className="button rounded accent-color edit-profile-link" onClick={onClick}>{children}</button>
+            <button className="button rounded accent-color edit-profile-link" onClick={onClick}>{button_text}</button>
         </>
     )
 }

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import SECREC_KEY from "../config.js";
 
-const generateAccessToken = (id, login) => {
+export const generateAccessToken = (id, login) => {
     const payload = {
         id,
         login
@@ -16,10 +16,8 @@ export default class AuthController {
     static async registration(req, res) {
         try {
             const {login, mail, password,name} = req.body
-            console.log(req.body)
             const candidate = await User.findUser(mail, login)
             if (candidate.rows.length != 0) {
-                console.log(candidate.rows)
                 return res.status(400).json({
                     message: 'Пользователь с таким именем или почтой уже существует'
                 })
@@ -52,7 +50,6 @@ export default class AuthController {
                     message: "такой пользователь не найден"
                 })
             }
-            console.log(req.body)
             const validPassword = bcrypt.compareSync(password, user.rows[0].user_password)
             if (!validPassword) {
                 return res.status(400).json({

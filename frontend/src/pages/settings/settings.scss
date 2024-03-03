@@ -6,7 +6,7 @@
     margin: 0 auto;
   }
 
-  h1{
+  h1 {
     text-align: center;
   }
 
@@ -38,27 +38,52 @@
       }
     }
 
-    #password-checker{
+    #password-checker {
       padding: 5px 10px;
       color: $text-color;
       border-radius: 3px;
       min-width: 181px;
       text-align: center;
 
-      &.correct{
+      &.correct {
         background-color: $good-color;
       }
 
-      &.wrong{
+      &.wrong {
         background-color: $warning-color;
       }
     }
   }
 
-  .buttons{
+  .buttons {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: 20px 15% 0;
+  }
+
+  .user-profile-image-wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap:5px;
+      .button.rounded {
+        font-size: 10px;
+      }
+    }
+
+    .user-image {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
   }
 }
