@@ -53,6 +53,43 @@ export default class User_controller {
             )
         }
     }
+    // получение подписок пользователя
+    static async getUserSubscribings(req,res){
+        try{
+            const user_id = req.params.user_id
+            const subscribers = await User.getUserSubscribings(user_id)
+            if (!subscribers.rows.length){
+                return  res.status(200).json([])
+            }else{
+                return res.status(200).json(subscribers.rows)
+            }
+        }catch (e) {
+            console.log(e)
+            return res.status(400).json({
+                message: e.message,
+                func: "getUserSubscribings"
+            })
+        }
+    }
+
+    // получение подпискичов пользователя
+    static async getUserSubscribers(req,res){
+        try{
+            const user_id = req.params.user_id
+            const subscribers = await User.GetUserSubscribers(user_id)
+            if (!subscribers.rows.length){
+                return  res.status(200).json([])
+            }else{
+                return res.status(200).json(subscribers.rows)
+            }
+        }catch (e) {
+            console.log(e)
+            return res.status(400).json({
+                message: e.message,
+                func: "getUserSubscribers"
+            })
+        }
+    }
 
     // получение диалога пользователя
     static async getDialog(req, res) {
@@ -131,10 +168,16 @@ export default class User_controller {
                     message: "пользователь не найден"
                 })
             } else {
+                let user_subscribers = await User.GetUserSubscribers(user_id)
+                user_subscribers = user_subscribers.rows.length ? user_subscribers.rows : []
+                let user_subscribings = await User.getUserSubscribings(user_id)
+                user_subscribings = user_subscribings.rows.length ? user_subscribings.rows : []
                 let user = query_result.rows[0]
                 return res.json({
                     user_name: user.user_name,
                     user_login: user.user_login,
+                    subscribers: user_subscribers.length,
+                    subscribings: user_subscribings.length
                 })
             }
         } catch (e) {

@@ -11,6 +11,14 @@ export default class User {
         await db.query('UPDATE users SET user_login = $2,user_name = $3, user_mail = $4 WHERE user_id=$1',[user_id,userdata.login,userdata.username,userdata.usermail])
     }
 
+    static async GetUserSubscribers(user_id){
+        return await db.query('SELECT * FROM user_subscribings WHERE user_id_to = $1',[user_id])
+    }
+
+    static async getUserSubscribings(user_id){
+        return await db.query('SELECT * FROM user_subscribings WHERE user_id_from = $1',[user_id])
+    }
+
     static async findUser(user_mail, user_login) {
         return db.query('SELECT * FROM users WHERE user_login = $1 OR user_mail = $2',
             [user_login, user_mail])

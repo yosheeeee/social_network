@@ -11,6 +11,7 @@ import "./user_page.scss"
 import UserBackground from "../../images/user_header_bg.png"
 import UserDefaultImage from "../../images/user_default_image.png"
 import UserImage from "../../components/UserImage";
+import NewPostForm from "../../modules/new-post-form/newPost";
 
 type UserPageParams = {
     id: string | undefined
@@ -19,7 +20,9 @@ type UserPageParams = {
 export interface UserData {
     user_name: string | null,
     user_login: string | null,
-    user_mail?: string | null
+    user_mail?: string | null,
+    subscribings:number,
+    subscribers:number,
 }
 
 export default function UserPage() {
@@ -31,7 +34,7 @@ export default function UserPage() {
     let userDispatch: Dispatch<UserAction> = useDispatch()
     const userPageParams = useParams<UserPageParams>()
     let [loading, setLoading] = useState(false)
-    let [userData, setUserData] = useState<UserData>({user_name: null, user_login: null})
+    let [userData, setUserData] = useState<UserData>({user_name: null, user_login: null , subscribers: 0, subscribings: 0})
     let [userImageSrc , setUserImageSrc] = useState("")
 
     useEffect(() => {
@@ -64,6 +67,10 @@ export default function UserPage() {
                             <UserImage file_src={BACKEND_PATH + '/static'+userImageSrc}/>
                             <p>{userData.user_name}</p>
                             <p className="color-blue">@{userData.user_login}</p>
+                            <p className='user-sub'>
+                                <span>Подписчики: <span className="color-blue bold">{userData.subscribers}</span></span>
+                                <span>Подписки: <span className="color-blue bold">{userData.subscribings}</span></span>
+                            </p>
                         </div>
                         {parseInt(userPageParams.id as string) == user.id && <EditProfileButton/>}
                         {parseInt(userPageParams.id as string) != user.id &&
@@ -71,6 +78,7 @@ export default function UserPage() {
                         }
                     </div>
                 </div>
+                <NewPostForm/>
             </>}
         </div>
     )

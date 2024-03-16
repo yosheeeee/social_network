@@ -16,11 +16,6 @@ export default function useNavLinks(user: UserState){
             link: 'notifications'
         },
         {
-            icon_name: 'fa-comment',
-            title: 'Сообщения',
-            link: 'messages'
-        },
-        {
             icon_name: 'fa-user',
             title: 'Профиль',
             link: user.isLoggedIn ? 'user/'+user.id : 'auth'
@@ -30,12 +25,12 @@ export default function useNavLinks(user: UserState){
     useEffect(() => {
         if(user.isLoggedIn){
             set_menu_items(prevState => {
-                prevState[3].link = 'user/'+user.id
+                prevState[2].link = 'user/'+user.id
                 return prevState
             })
         }else{
             set_menu_items(prevState => {
-                prevState[3].link ='auth'
+                prevState[2].link ='auth'
                 return prevState
             })
         }

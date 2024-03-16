@@ -220,6 +220,7 @@ function SettingsField(props: {
                    value={value}
                    id={"settings-" + name}
                    name={name}
+                   autoComplete="off"
                    onChange={onChange}
             />
         </div>
