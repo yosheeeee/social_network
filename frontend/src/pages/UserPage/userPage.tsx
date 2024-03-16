@@ -25,6 +25,11 @@ export interface UserData {
     subscribers:number,
 }
 
+export interface UserPost{
+    content: string,
+    post_date: number,
+}
+
 export default function UserPage() {
     function logout() {
         userDispatch({type: UserActionTypes.LOGOUT_USER})
@@ -36,6 +41,8 @@ export default function UserPage() {
     let [loading, setLoading] = useState(false)
     let [userData, setUserData] = useState<UserData>({user_name: null, user_login: null , subscribers: 0, subscribings: 0})
     let [userImageSrc , setUserImageSrc] = useState("")
+    let [userPosts, setUserPosts] = useState<UserPost[]>([])
+
 
     useEffect(() => {
         setLoading(true)
@@ -53,6 +60,10 @@ export default function UserPage() {
                 console.log(data)
                 setUserImageSrc(data.file_src)
             })
+        axios.get(BACKEND_PATH+'/user/posts/'+userPageParams.id)
+            .then(res => res.data.posts as UserPost[])
+            .then(data => setUserPosts(data))
+        console.log(userPosts)
         setLoading(false)
     }, [userPageParams]);
 
@@ -78,7 +89,47 @@ export default function UserPage() {
                         }
                     </div>
                 </div>
-                <NewPostForm/>
+
+                {parseInt(userPageParams.id as string) == user.id && (
+                    <>
+                        <NewPostForm/>
+                    </>
+                )}
+
+                <div id="user-posts">
+                    <h2>Записи пользователя:</h2>
+
+
+                    {userPosts.length == 0 ? <h3>Записи отсутстуют</h3> :
+
+                            userPosts.map(post => {
+                                let date = new Date(post.post_date)
+                                let options = {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    weekday: 'long',
+                                    timezone: 'UTC',
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                };
+
+                                // @ts-ignore
+                                return (
+                                    <div className='user-post' >
+                                        <div className="post-date">{date.toLocaleDateString("ru" , {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                            weekday: 'long',
+                                        })}</div>
+                                        <div className='post-content' dangerouslySetInnerHTML={{__html: post.content}}></div>
+                                    </div>
+                                )
+                                }
+                            )
+                    }
+                </div>
             </>}
         </div>
     )

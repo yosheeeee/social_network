@@ -19,5 +19,6 @@ user_router.post('/image',AuthMiddleware,User_controller.AddUserImage)
 user_router.get('/image/:id',User_controller.GetUserImage)
 user_router.get('/subscribers/:user_id',User_controller.getUserSubscribers)
 user_router.get('/subscribings/:user_id',User_controller.getUserSubscribings)
-
+user_router.post('/post',AuthMiddleware, User_controller.AddUserPost)
+user_router.get('/posts/:user_id',User_controller.GetUserPosts)
 export default user_router

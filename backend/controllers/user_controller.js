@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import fs from "fs"
 import {FILE_DIR_PATH} from "../config.js";
 import DbFile from "../models/File.js";
+import Post from "../models/post.js";
 
 
 
@@ -269,5 +270,34 @@ export default class User_controller {
         }
     }
 
+    static async AddUserPost(req,res){
+        try{
+            let user = req.current_user
+            console.log(user)
+            let post_content = req.body.post_content
+            await Post.addPost(user.id, post_content)
+            return res.status(200).json({mesage: "ok"})
+        }catch (e) {
+            return res.status(400).json({
+                error: e.message,
+                function: "AddUserPost"
+            })
+        }
+    }
 
+    static async GetUserPosts(req,res){
+        try{
+            let user_id = req.params.user_id
+            let db_res = await Post.getUserPosts(user_id)
+            let user_posts = db_res.rows?.length ? db_res.rows : []
+            return res.status(200).json({
+                posts: user_posts
+            })
+        }catch (e) {
+            return res.status(400).json({
+                error: e.message,
+                function: "GetUserPosts"
+            })
+        }
+    }
 }
