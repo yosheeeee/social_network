@@ -85,6 +85,28 @@
       .post-content{
         margin-top: 5px;
       }
+
+      .post-stats{
+        margin: 5px;
+        border-top-style:  solid;
+        border-top-color: $boder-color;
+        border-top-width: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap:10px;
+        padding-top: 10px;
+
+        &>span{
+          display: flex;
+          align-items: center;
+          gap:5px;
+
+          span{
+            color: $main-accent-color;
+          }
+        }
+      }
     }
   }
 }

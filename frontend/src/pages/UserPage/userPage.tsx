@@ -12,12 +12,13 @@ import UserBackground from "../../images/user_header_bg.png"
 import UserDefaultImage from "../../images/user_default_image.png"
 import UserImage from "../../components/UserImage";
 import NewPostForm from "../../modules/new-post-form/newPost";
+import PostStats, {IPostStats} from "../../components/post-stats/postStats";
 
 type UserPageParams = {
     id: string | undefined
 }
 
-export interface UserData {
+export interface UserData{
     user_name: string | null,
     user_login: string | null,
     user_mail?: string | null,
@@ -25,7 +26,7 @@ export interface UserData {
     subscribers:number,
 }
 
-export interface UserPost{
+export interface UserPost extends IPostStats{
     content: string,
     post_date: number,
 }
@@ -124,6 +125,7 @@ export default function UserPage() {
                                             weekday: 'long',
                                         })}</div>
                                         <div className='post-content' dangerouslySetInnerHTML={{__html: post.content}}></div>
+                                        <PostStats {...post}/>
                                     </div>
                                 )
                                 }
