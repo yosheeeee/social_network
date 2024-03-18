@@ -40,4 +40,20 @@ export default class Post_controller {
             )
         }
     }
+
+    static async getPostComments(req,res){
+        try{
+            let post_id = req.params.post_id
+            let query_res  = await Post.getPostComments(post_id)
+            let comments = query_res.rows?.length ? query_res.rows : []
+            return res.status(200).json(
+                {comments: comments}
+            )
+        }catch(e){
+            return res.status(400).json({
+                e: e.message,
+                function: "getPostComments"
+            })
+        }
+    }
 }

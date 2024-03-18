@@ -47,4 +47,8 @@ export default class Post{
             `,[user_id,post_id]
         )
     }
+
+    static async getPostComments(post_id){
+        return await db.query('SELECT * FROM post_comments WHERE post_id = $1 ORDER BY comment_date DESC',[post_id])
+    }
 }

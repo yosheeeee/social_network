@@ -4,6 +4,7 @@ import user_router from "./routes/user.routes.js";
 import file_upload from "express-fileupload"
 import cors from "cors";
 import {post_router} from "./routes/post.routes.js";
+import {comments_router} from "./routes/comment.routes.js";
 
 
 
@@ -17,4 +18,5 @@ app.use('/static',express.static('user_files'))
 app.use('/auth',auth_router)
 app.use('/user',user_router)
 app.use('/post',post_router)
+app.use('/comments',comments_router)
 app.listen(PORT,() => console.log('server working on port '+PORT))

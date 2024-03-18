@@ -3,33 +3,34 @@
 .auth-form {
   width: fit-content;
   margin: 0 auto;
+
   .form-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 5px;
 
-    button{
+    button {
       background: none;
       color: rgba(255, 255, 255, 0.34);
-      border:none;
+      border: none;
       cursor: pointer;
       font-size: 20px;
 
-      &[disabled]{
-        color:$text-color;
+      &[disabled] {
+        color: $text-color;
       }
     }
   }
 
-  form{
+  form {
     margin-top: 20px;
     display: flex;
     align-items: center;
     flex-direction: column;
     gap: 12px;
 
-    .input-container{
+    .input-container {
       width: 100%;
       min-width: max-content;
       color: $text-color;
@@ -39,7 +40,7 @@
       justify-content: space-between;
       position: relative;
 
-      input{
+      input {
         outline: none;
         background: none;
         border: 1px solid $text-color;
@@ -48,20 +49,20 @@
         border-radius: 3px;
       }
 
-      .show-password-btn{
+      .show-password-btn {
         position: absolute;
         right: -30px;
         cursor: pointer;
 
-        &.active{
-          i{
-            color:$main-accent-color;
+        &.active {
+          i {
+            color: $main-accent-color;
           }
         }
       }
     }
 
-    input{
+    input {
       outline: none;
       background: none;
       border: 1px solid $text-color;
@@ -69,15 +70,15 @@
       padding: 5px 10px;
       border-radius: 3px;
 
-      &[type="submit"]{
+      &[type="submit"] {
         margin-top: 20px;
         cursor: pointer;
       }
     }
   }
 
-  .loader{
-    img{
+  .loader {
+    img {
       max-width: 50px;
       object-fit: contain;
     }

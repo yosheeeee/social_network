@@ -4,6 +4,7 @@ import {useTypeSelector} from "../../hooks/useTypeSelector";
 import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../Loader/Loader";
+import Popup from "../popup/Popup";
 
 export interface IPostStats {
     likes: number,
@@ -16,7 +17,9 @@ export default function PostStats({likes, comments, id}: IPostStats) {
     const current_user = useTypeSelector(state => state.user)
     const [isLiked, setIsLiked] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [likesCounter , setLikesCounter] = useState(likes)
+    const [likesCounter, setLikesCounter] = useState(likes)
+    const [showPopup, setShowPopup] = useState(false)
+    const [postComments, setPostComments] = useState([])
 
     useEffect(() => {
         if (current_user.isLoggedIn) {
@@ -38,7 +41,7 @@ export default function PostStats({likes, comments, id}: IPostStats) {
 
     function likeClickHandler() {
         if (current_user.isLoggedIn) {
-            if (!isLiked){
+            if (!isLiked) {
                 axios.post(BACKEND_PATH + '/post/like/' + id, {}, {
                     headers: {
                         Authorization: "Bearer " + current_user.token
@@ -49,8 +52,8 @@ export default function PostStats({likes, comments, id}: IPostStats) {
                         setLikesCounter(prevState => +prevState + 1)
                     })
                     .catch(e => console.log(e.response))
-            }else{
-                axios.delete(BACKEND_PATH+ '/post/like/' + id ,{
+            } else {
+                axios.delete(BACKEND_PATH + '/post/like/' + id, {
                     headers: {
                         Authorization: "Bearer " + current_user.token
                     }
@@ -64,20 +67,34 @@ export default function PostStats({likes, comments, id}: IPostStats) {
         }
     }
 
+    function openCommentsHandler() {
+        setShowPopup(true)
+    }
+
+    useEffect(() => {
+
+    }, []);
+
     return (
-        <div className="post-stats">
-            {isLoading ? <Loader/> :
-                <>
+        <>
+            <div className="post-stats">
+                {isLoading ? <Loader/> :
+                    <>
             <span>
                 <i className={isLiked ? "fa-solid fa-heart active" : "fa-solid fa-heart"}
                    onClick={likeClickHandler}></i> <span>{likesCounter}</span>
             </span>
-
-                    <span>
-                <i className="fa-solid fa-comments"></i> <span>{comments}</span>
+                        <span>
+                <i className="fa-solid fa-comments"
+                   onClick={openCommentsHandler}></i> <span>{comments}</span>
             </span>
-                </>
-            }
-        </div>
+                    </>
+                }
+            </div>
+            <Popup showPopup={showPopup}
+                   setShowPopup={setShowPopup}>
+                <h2>Комментарии</h2>
+            </Popup>
+        </>
     )
 }
