@@ -63,8 +63,9 @@ export default function UserPage() {
             })
         axios.get(BACKEND_PATH+'/user/posts/'+userPageParams.id)
             .then(res => res.data.posts as UserPost[])
-            .then(data => setUserPosts(data))
-        console.log(userPosts)
+            .then(data => {setUserPosts(data)
+                console.log(data)
+            })
         setLoading(false)
     }, [userPageParams]);
 

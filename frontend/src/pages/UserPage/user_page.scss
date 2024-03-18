@@ -102,8 +102,15 @@
           align-items: center;
           gap:5px;
 
+          i.fa-heart{
+            &.active{
+              color: red;
+            }
+          }
+
           span{
             color: $main-accent-color;
+
           }
         }
       }

@@ -21,4 +21,5 @@ user_router.get('/subscribers/:user_id',User_controller.getUserSubscribers)
 user_router.get('/subscribings/:user_id',User_controller.getUserSubscribings)
 user_router.post('/post',AuthMiddleware, User_controller.AddUserPost)
 user_router.get('/posts/:user_id',User_controller.GetUserPosts)
+user_router.get('/check-like/:post_id',AuthMiddleware, User_controller.CheckUserToPostLike)
 export default user_router

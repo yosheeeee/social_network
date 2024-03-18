@@ -290,6 +290,7 @@ export default class User_controller {
             let user_id = req.params.user_id
             let db_res = await Post.getUserPosts(user_id)
             let user_posts = db_res.rows?.length ? db_res.rows : []
+            console.log(user_posts)
             return res.status(200).json({
                 posts: user_posts
             })
@@ -297,6 +298,20 @@ export default class User_controller {
             return res.status(400).json({
                 error: e.message,
                 function: "GetUserPosts"
+            })
+        }
+    }
+
+    static async CheckUserToPostLike(req, res){
+        try{
+            const current_user_id = req.current_user.id
+            const post_id = req.params.post_id
+            const query_res = await Post.getUserToPostLikes(current_user_id, post_id)
+            return res.status(200).json(query_res.rows[0])
+        }catch (e) {
+            return res.status(400).json({
+                e: e.message,
+                function: "CheckUserToPostLike"
             })
         }
     }
