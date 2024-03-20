@@ -6,9 +6,9 @@ import {UserAction, UserActionTypes} from "../../store/reducers/userReducer/type
 import {useNavigate} from "react-router-dom";
 import {BACKEND_PATH} from "../../constants";
 import axios from "axios";
-import {UserData} from "../UserPage/userPage";
 import Loader from "../../components/Loader/Loader";
 import "./settings.scss"
+import {UserData} from "../../hooks/useUserPage";
 
 interface SettingsInput {
     input_type: string,

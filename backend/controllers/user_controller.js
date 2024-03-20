@@ -273,8 +273,8 @@ export default class User_controller {
     static async AddUserPost(req,res){
         try{
             let user = req.current_user
-            console.log(user)
             let post_content = req.body.post_content
+            console.log(post_content)
             await Post.addPost(user.id, post_content)
             return res.status(200).json({mesage: "ok"})
         }catch (e) {
@@ -307,6 +307,7 @@ export default class User_controller {
             const current_user_id = req.current_user.id
             const post_id = req.params.post_id
             const query_res = await Post.getUserToPostLikes(current_user_id, post_id)
+            console.log(query_res.rows[0])
             return res.status(200).json(query_res.rows[0])
         }catch (e) {
             return res.status(400).json({

@@ -32,12 +32,15 @@ export default function PostStats({likes, comments, id}: IPostStats) {
                 })
                 .then(res => res.data as { isliked: boolean })
                 .then(data => {
-                    console.log(data)
                     setIsLiked(data.isliked)
                 })
             setIsLoading(false)
         }
-    }, []);
+    }, [likes,comments,id]);
+
+    // useEffect(() => {
+    //     console.log(id, isLiked)
+    // }, [isLiked]);
 
     function likeClickHandler() {
         if (current_user.isLoggedIn) {
@@ -70,10 +73,6 @@ export default function PostStats({likes, comments, id}: IPostStats) {
     function openCommentsHandler() {
         setShowPopup(true)
     }
-
-    useEffect(() => {
-
-    }, []);
 
     return (
         <>
