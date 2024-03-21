@@ -56,4 +56,21 @@ export default class Post_controller {
             })
         }
     }
+
+    static async addComment(req,res){
+        try{
+            const current_user_id = req.current_user.id
+            const comment_content  =req.body.comment_content
+            const post_id  = req.body.post_id
+            await Post.postComment(current_user_id, post_id, comment_content)
+            return res.status(200).json({
+                message: "ok"
+            })
+        }catch(e){
+            return res.status(400).json({
+                e: e.message,
+                function: "addComment"
+            })
+        }
+    }
 }

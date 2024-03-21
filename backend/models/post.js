@@ -49,6 +49,19 @@ export default class Post{
     }
 
     static async getPostComments(post_id){
-        return await db.query('SELECT * FROM post_comments WHERE post_id = $1 ORDER BY comment_date DESC',[post_id])
+        return await db.query(`SELECT users.user_name, post_comments.user_id, COALESCE(files.file_src, '/user_default_image.png') as user_image , comment_date, comment_content
+                               FROM post_comments
+                                        LEFT JOIN public.users ON post_comments.user_id = users.user_id
+                                        LEFT JOIN public.files ON CAST(files.meta_value as DECIMAL) = post_comments.user_id AND files.meta_key = 'user_image'
+                               WHERE post_id = $1
+                               ORDER BY comment_date DESC
+        `,[post_id])
+    }
+
+    static async postComment(user_id, post_id, comment_content){
+        await db.query(
+            "INSERT INTO post_comments (post_id, user_id, comment_content) VALUES ($1,$2,$3)",
+            [post_id, user_id, comment_content]
+        )
     }
 }

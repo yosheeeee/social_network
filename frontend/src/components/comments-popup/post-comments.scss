@@ -1,0 +1,56 @@
+@import "../../colors";
+
+#comment-form{
+  h3{
+    margin: 10px auto;
+  }
+  button{
+    margin: 10px auto;
+  }
+}
+
+#comments{
+  display: flex;
+  flex-direction: column;
+
+  .comment{
+    border: 2px solid $secondary-border-color;
+    padding: 20px;
+    border-bottom: 0;
+
+      .comment-header{
+        display: flex;
+        align-items:center;
+        gap: 20px;
+        font-size: 22px;
+        width: fit-content;
+
+        img{
+          width: 60px;
+          height: 60px;
+          object-fit: contain;
+          border-radius: 50%;
+        }
+
+        &:hover{
+          text-decoration: none;
+        }
+      }
+
+    &:first-of-type{
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    &:last-of-type{
+      border-bottom: 2px solid $secondary-border-color;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+    }
+
+    .comment-content{
+      margin-top: 10px;
+      font-size: 18px;
+    }
+  }
+}

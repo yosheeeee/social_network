@@ -5,6 +5,7 @@ import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../Loader/Loader";
 import Popup from "../popup/Popup";
+import PostComments from "../comments-popup/postComments";
 
 export interface IPostStats {
     likes: number,
@@ -90,10 +91,7 @@ export default function PostStats({likes, comments, id}: IPostStats) {
                     </>
                 }
             </div>
-            <Popup showPopup={showPopup}
-                   setShowPopup={setShowPopup}>
-                <h2>Комментарии</h2>
-            </Popup>
+            <PostComments showPopup={showPopup} setShowPopup={setShowPopup} post_id={id}/>
         </>
     )
 }

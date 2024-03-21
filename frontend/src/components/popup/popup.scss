@@ -24,7 +24,7 @@
 
     .close-btn{
       position: sticky;
-      width: 100%;
+      width: calc(100% + 20px);
       font-size: 25px;
       border: none;
       background:$boder-color;
