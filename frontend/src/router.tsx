@@ -7,6 +7,7 @@ import App from "./App";
 import {Feed} from "./pages/feed/feed";
 import UserPage from "./pages/UserPage/userPage";
 import Settings from "./pages/settings/settings";
+import Notifications from "./pages/notifications/Notifications";
 const routes : RouteObject[] = [
     {
         path: '/',
@@ -20,6 +21,10 @@ const routes : RouteObject[] = [
             {
                 path : 'auth',
                 element: <AuthForm/>
+            },
+            {
+                path: 'notifications',
+                element: <Notifications/>
             },
             {
                 path: 'user/:id',

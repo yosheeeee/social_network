@@ -49,12 +49,12 @@ export default function PostComments({showPopup, setShowPopup, post_id}: {
     return (
         <Popup showPopup={showPopup}
                setShowPopup={setShowPopup}>
-            <h2>Комментарии</h2>
             {loading ? <Loader/> : (
                 <>
                     <AddComentForm post_id={post_id}
                                    loadComments={loadComments}/>
                     <div id="comments">
+                        <h2>{commentsData.length == 0 ? "Комментарии отсутствуют" : "Комментарии"}</h2>
                         {commentsData.map(commentData => <div className="comment">
                             <Link className="comment-header"
                                   to={'/user/' + commentData.user_id}>

@@ -24,11 +24,12 @@
 
     .close-btn{
       position: sticky;
+      z-index: 1000;
       width: calc(100% + 20px);
       font-size: 25px;
       border: none;
       background:$boder-color;
-      top: 0;
+      top: -1px;
       left: 0;
       padding: 15px 15px;
       color: $text-color;
