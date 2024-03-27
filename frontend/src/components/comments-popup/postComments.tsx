@@ -4,7 +4,7 @@ import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../Loader/Loader";
 import "./post-comments.scss"
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import TextEditor from "../TextEditor";
 import {useTypeSelector} from "../../hooks/useTypeSelector";
 import {convertToRaw, EditorState} from "draft-js";
@@ -21,24 +21,21 @@ interface CommentState {
     comment_date: string,
 }
 
-export default function PostComments({showPopup, setShowPopup, post_id}: {
-    showPopup: boolean,
-    setShowPopup: React.Dispatch<SetStateAction<boolean>>,
-    post_id: number
-}) {
+export default function PostComments() {
     const [commentsData, setCommentsData] = useState<CommentState[]>([])
     const [loading, setLoading] = useState(false)
+    let {postId} = useParams()
+
+    const navigate = useNavigate()
 
     useEffect(() => {
-        if (showPopup) {
             loadComments()
-        }
-    }, [showPopup]);
+    }, []);
 
 
     function loadComments() {
         setLoading(true)
-        axios.get(BACKEND_PATH + '/comments/' + post_id)
+        axios.get(BACKEND_PATH + '/comments/' + postId)
             .then(res => res.data.comments as CommentState[])
             .then(data => setCommentsData(data))
             .catch(e => console.log(e))
@@ -46,12 +43,17 @@ export default function PostComments({showPopup, setShowPopup, post_id}: {
     }
 
 
+    function closePopup(elem : boolean){
+        navigate('..')
+    }
+
+
     return (
-        <Popup showPopup={showPopup}
-               setShowPopup={setShowPopup}>
+        <Popup showPopup={true}
+               setShowPopup={closePopup}>
             {loading ? <Loader/> : (
                 <>
-                    <AddComentForm post_id={post_id}
+                    <AddComentForm post_id={parseInt(postId as string)}
                                    loadComments={loadComments}/>
                     <div id="comments">
                         <h2>{commentsData.length == 0 ? "Комментарии отсутствуют" : "Комментарии"}</h2>

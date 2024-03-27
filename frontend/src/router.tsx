@@ -8,6 +8,7 @@ import {Feed} from "./pages/feed/feed";
 import UserPage from "./pages/UserPage/userPage";
 import Settings from "./pages/settings/settings";
 import Notifications from "./pages/notifications/Notifications";
+import PostComments from "./components/comments-popup/postComments";
 const routes : RouteObject[] = [
     {
         path: '/',
@@ -28,7 +29,13 @@ const routes : RouteObject[] = [
             },
             {
                 path: 'user/:id',
-                element: <UserPage/>
+                element: <UserPage/>,
+                children: [
+                    {
+                        path: 'post/:postId/comments',
+                        element: <PostComments/>
+                    }
+                ]
             },
             {
                 path:'settings',

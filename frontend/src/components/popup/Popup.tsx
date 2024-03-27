@@ -3,7 +3,7 @@ import "./popup.scss"
 
 export default function Popup({showPopup, setShowPopup, children}: {
     showPopup: boolean,
-    setShowPopup: React.Dispatch<React.SetStateAction<boolean>>,
+    setShowPopup: (state : boolean) => void,
     children: ReactNode
 }) {
 

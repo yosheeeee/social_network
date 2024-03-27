@@ -6,6 +6,7 @@ import UserBackground from "../../images/user_header_bg.png"
 import UserImage from "../../components/UserImage";
 import useUserPage, {UserData, UserPageParams, UserPost} from "../../hooks/useUserPage";
 import PostStats from "../../components/post-stats/postStats";
+import {Outlet} from "react-router-dom";
 
 
 
@@ -33,6 +34,7 @@ export default function UserPage() {
                     </div>
                 </div>
 
+                <Outlet/>
                 <PostForm/>
 
                 <div id="user-posts">

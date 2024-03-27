@@ -52,7 +52,7 @@ export default class Post {
 
         if (query_res.rows[0].user_id !== user_id) {
             console.log(query_res.rows[0])
-            let notification_content = `<h4>Пользователь <a href="http://localhost:300/user/${query_res.rows[0].user_id}">${query_res.rows[0].user_name}</a> поставил лайк вашей записи</h4>`
+            let notification_content = `<h4>Пользователь <a href="http://localhost:3000/user/${query_res.rows[0].user_id}">${query_res.rows[0].user_name}</a> поставил лайк <a href="http://localhost:3000/user/${user_id}">вашей записи</a></h4>`
 
             await db.query(`
                 INSERT INTO notifications_table (notification_type, user_id, notification_subject,
@@ -106,7 +106,7 @@ export default class Post {
         query_result = query_result.rows[0]
 
         if (query_result.user_id !== user_id){
-            let notification_content = `<h4>Пользователь <a href="http://localhost:300/user/${query_res.user_id}">${query_res.user_name}</a> оставил комментарий вашей записи</h4>`
+            let notification_content = `<h4>Пользователь <a href="http://localhost:3000/user/${query_res.user_id}">${query_res.user_name}</a> оставил комментарий <a href="http://localhost:3000/user/${user_id}/post/${post_id}/comments">вашей записи</a></h4>`
             await db.query(`
                 INSERT INTO notifications_table (notification_type, user_id, notification_subject, notification_content) 
                 VALUES ($1, $2,$3,$4) 

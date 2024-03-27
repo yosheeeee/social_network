@@ -6,6 +6,7 @@ import {BACKEND_PATH} from "../../constants";
 import Loader from "../Loader/Loader";
 import Popup from "../popup/Popup";
 import PostComments from "../comments-popup/postComments";
+import {useNavigate} from "react-router-dom";
 
 export interface IPostStats {
     likes: number,
@@ -71,8 +72,9 @@ export default function PostStats({likes, comments, id}: IPostStats) {
         }
     }
 
+    const navigate = useNavigate()
     function openCommentsHandler() {
-        setShowPopup(true)
+        navigate(`./post/${id}/comments`)
     }
 
     return (
@@ -91,7 +93,6 @@ export default function PostStats({likes, comments, id}: IPostStats) {
                     </>
                 }
             </div>
-            <PostComments showPopup={showPopup} setShowPopup={setShowPopup} post_id={id}/>
         </>
     )
 }
