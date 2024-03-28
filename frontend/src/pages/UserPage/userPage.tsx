@@ -57,7 +57,7 @@ export default function UserPage() {
 
                                 return (
                                     <div className='user-post'>
-                                        <div className="post-date">{date.toLocaleDateString("ru", {
+                                        <div className="post-date">{`${date.getHours()}:${date.getMinutes()}`}, {date.toLocaleDateString("ru", {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',
