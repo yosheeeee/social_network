@@ -1,76 +1,102 @@
-import "./notifications.scss"
-import {useState} from "react";
+import "./notifications.scss";
+import {useEffect, useState} from "react";
+import axios from "axios";
+import {BACKEND_PATH} from "../../constants";
+import {useTypeSelector} from "../../hooks/useTypeSelector";
+import Loader from "../../components/Loader/Loader";
 
-interface INotification{
-    date: number,
-    notification_type: string,
-    notification_subject: string,
-    notification_content: string
+interface INotification {
+    notification_date: string;
+    notification_type: string;
+    notification_subject: string;
+    notification_content: string;
 }
 
-export default function Notifications(){
-    const [notifications, setNotification] = useState<INotification[]>([
-        {
-            date: 0,
-            notification_type: 'comment',
-            notification_subject: 'Пользователь оставил комментарий',
-            notification_content: 'Пользователь <a href="#">user</a> оставил комментарий <a href="#">Вашей записи</a>'
-        },
-        {
-            date: 0,
-            notification_type: 'comment',
-            notification_subject: 'Пользователь оставил комментарий',
-            notification_content: 'Пользователь <a href="#">user</a> оставил комментарий <a href="#">Вашей записи</a>'
+export default function Notifications() {
+    const user = useTypeSelector(state => state.user)
+    const [notifications, setNotification] = useState<INotification[]>([]);
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        setLoading(true)
+        if (user.isLoggedIn) {
+            axios.get(BACKEND_PATH + '/user/notifications/get',
+                {headers: {Authorization: `Bearer ${user.token}`}})
+                .then(res => {
+                    console.log(res.data)
+                    return res.data as INotification[]
+                })
+                .then(data => setNotification(data))
+                .catch(e => console.log(e))
+                // .finally(() => setLoading(false))
         }
-    ])
+    }, [user.isLoggedIn]);
 
     return (
         <div id="notifications-page">
             <h1>Уведомления</h1>
-            {notifications.length == 0 ?
-            <h2>Уведомления отсутствуют</h2> :
-                <div className="notifications">
-                    {notifications.map(notification => <Notification {...notification}/>)}
-                </div>
+            {loading ? <Loader/> : (
+                <>
+                    {notifications.length == 0 ? (
+                        <h2>Уведомления отсутствуют</h2>
+                    ) : (
+                        <div className="notifications">
+                            {notifications.map((notification) => (
+                                <Notification {...notification} />
+                            ))}
+                        </div>
+                    )}
+                </>
+            )
             }
 
         </div>
-    )
+    );
 }
 
-function Notification({date, notification_content, notification_subject, notification_type} : INotification){
-    const notification_date = new Date()
+function Notification({
+                          notification_date,
+                          notification_content,
+                          notification_subject,
+                          notification_type,
+                      }: INotification) {
+    const date = new Date();
     let options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-        timezone: 'UTC',
-        hour: 'numeric',
-        minute: 'numeric',
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+        timezone: "UTC",
+        hour: "numeric",
+        minute: "numeric",
     };
 
-    let icons : {
-        [key : string] : string
+    let icons: {
+        [key: string]: string;
     } = {
-        comment: 'fa-comment',
-        like: 'fa-heart'
-    }
+        comment: "fa-comment",
+        like: "fa-heart",
+    };
 
-    return(
+    return (
         <div className="notification">
             <div className="header">
-              <i className={'fa-solid '+ icons[notification_type]}></i>
+                <i className={"fa-solid " + icons[notification_type]}></i>
                 <p>{notification_subject}</p>
-                <p>{`${notification_date.getHours()}:${notification_date.getMinutes()}`}, {notification_date.toLocaleDateString("ru", {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday: 'long',
-                })}</p>
+                <p>
+                    {`${date.getHours()}:${date.getMinutes()}`},{" "}
+                    {date.toLocaleDateString("ru", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        weekday: "long",
+                    })}
+                </p>
             </div>
-            <div className="notification-content" dangerouslySetInnerHTML={{__html:notification_content}}>
-            </div>
+            <div
+                className="notification-content"
+                dangerouslySetInnerHTML={{__html: notification_content}}
+            ></div>
         </div>
-    )
+    );
 }

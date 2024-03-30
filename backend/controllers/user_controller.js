@@ -307,12 +307,24 @@ export default class User_controller {
             const current_user_id = req.current_user.id
             const post_id = req.params.post_id
             const query_res = await Post.getUserToPostLikes(current_user_id, post_id)
-            console.log(query_res.rows[0])
             return res.status(200).json(query_res.rows[0])
         }catch (e) {
             return res.status(400).json({
                 e: e.message,
                 function: "CheckUserToPostLike"
+            })
+        }
+    }
+
+    static async GetUserNotifications(req, res){
+        try{
+            const current_user_id = req.current_user.id
+            const user_notifications = await User.GetNotifications(current_user_id)
+            return res.status(200).json(user_notifications)
+        }catch(e){
+            return res.status(400).json({
+                e: e.message,
+                function: 'GetUserNotification'
             })
         }
     }
