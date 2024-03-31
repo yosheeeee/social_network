@@ -13,6 +13,7 @@ function App() {
     let [userCookie, setUserCookie] = useLocalStorage("user", null)
     let user = useTypeSelector(state => state.user)
     let userDispatch : Dispatch<UserAction> = useDispatch()
+
     useEffect(() => {
         if (userCookie) {
             userDispatch({type: UserActionTypes.AUTH_USER, payload : {token : userCookie.token, id: userCookie.id as number}})

@@ -28,7 +28,7 @@ export default function Notifications() {
                 })
                 .then(data => setNotification(data))
                 .catch(e => console.log(e))
-                // .finally(() => setLoading(false))
+                .finally(() => setLoading(false))
         }
     }, [user.isLoggedIn]);
 

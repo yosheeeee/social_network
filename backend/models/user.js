@@ -35,9 +35,7 @@ export default class User {
     }
 
     static async checkSubscribe(user_from_id, user_to_id){
-        console.log(user_from_id,user_to_id)
         let user_subscribtion = await db.query('SELECT * FROM user_subscribings WHERE user_id_from = $1 AND user_id_to = $2', [user_from_id, user_to_id])
-        console.log(user_subscribtion)
         return user_subscribtion.rows.length != 0
     }
 

@@ -34,7 +34,6 @@ export default class AuthController {
             )
 
         } catch (e) {
-            console.log(e)
             res.status(400).json({
                 message: 'registration error'
             })
@@ -60,7 +59,6 @@ export default class AuthController {
             return res.json({token: token, id: user.rows[0].user_id})
         } catch (e) {
 
-            console.log(e)
             res.status(400).json({
                 message: 'login error'
             })

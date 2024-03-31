@@ -49,6 +49,7 @@ export default function useUserPage() {
     let [userImageSrc, setUserImageSrc] = useState("")
     let [userPosts, setUserPosts] = useState<UserPost[]>([])
     let [newPostState, setNewPostState] = useState(EditorState.createEmpty())
+    let newPostImagesState = useState<FileList | null>(null)
 
     //подгрузка данных о пользователе
     useEffect(() => {
@@ -74,9 +75,17 @@ export default function useUserPage() {
     // функция отправки нового поста на бэк
     function sendNewPostHandler() {
         if (!newPostState.getCurrentContent().hasText()) return
-        axios.post(BACKEND_PATH + '/user/post', {
-            post_content: draftToHtml(convertToRaw(newPostState.getCurrentContent()))
-        }, {
+        let filesFormData = new FormData()
+        if (newPostImagesState[0] != null){
+
+            for (let i =0; i< newPostImagesState[0]?.length; i++ ){
+                filesFormData.append('post_file_'+i, newPostImagesState[0][i])
+            }
+        }
+        filesFormData.append('post_content' , draftToHtml(convertToRaw(newPostState.getCurrentContent())))
+        axios.post(BACKEND_PATH + '/user/post',
+            filesFormData,
+            {
             headers: {
                 Authorization: "Bearer " + user.token
             }
@@ -107,6 +116,8 @@ export default function useUserPage() {
                 {parseInt(userPageParams.id as string) == user.id && (
                     <>
                         <NewPostForm
+                            postImages={newPostImagesState[0]}
+                            setPostImages={newPostImagesState[1]}
                             editorValue={newPostState}
                             setEditorValue={setNewPostState}
                             submitFromHandler={sendNewPostHandler}/>

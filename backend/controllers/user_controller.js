@@ -274,7 +274,8 @@ export default class User_controller {
         try{
             let user = req.current_user
             let post_content = req.body.post_content
-            console.log(post_content)
+            // TODO: добавить изображения к бэку
+            let post_images = req.files
             await Post.addPost(user.id, post_content)
             return res.status(200).json({mesage: "ok"})
         }catch (e) {
@@ -290,7 +291,6 @@ export default class User_controller {
             let user_id = req.params.user_id
             let db_res = await Post.getUserPosts(user_id)
             let user_posts = db_res.rows?.length ? db_res.rows : []
-            console.log(user_posts)
             return res.status(200).json({
                 posts: user_posts
             })

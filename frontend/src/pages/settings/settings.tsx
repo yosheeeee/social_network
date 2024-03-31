@@ -178,7 +178,7 @@ export default function Settings() {
     return (
         <div id="settings-page">
             <h1>Настройки</h1>
-            <ChangeProfileImage setLoading = {setLoading}/>
+            <ChangeProfileImage setLoading={setLoading}/>
             <form id="settings"
                   onSubmit={e => e.preventDefault()}
                   ref={formRef as MutableRefObject<HTMLFormElement>}>
@@ -258,7 +258,7 @@ function SaveDataToServerButton({formSubmit}: { formSubmit: Function }) {
     )
 }
 
-function ChangeProfileImage({setLoading} : {setLoading: any}) {
+function ChangeProfileImage({setLoading}: { setLoading: any }) {
     let user = useTypeSelector(state => state.user)
     let [selectedFile, setSelectedFile] = useState<File | null>(null)
     let [initFile, setInitFile] = useState<File | null>(null)
@@ -268,9 +268,9 @@ function ChangeProfileImage({setLoading} : {setLoading: any}) {
         // @ts-ignore
         setSelectedFile(e.target.files[0])
         // @ts-ignore
-        if (e.target.files.length != 0){
+        if (e.target.files.length != 0) {
             setIsChanged(true)
-        }else{
+        } else {
             setSelectedFile(initFile)
             setIsChanged(false)
         }
@@ -278,15 +278,15 @@ function ChangeProfileImage({setLoading} : {setLoading: any}) {
 
     useEffect(() => {
         setLoading(true)
-        axios.get(BACKEND_PATH+'/user/image/'+user.id)
+        axios.get(BACKEND_PATH + '/user/image/' + user.id)
             .then(res => res.data)
-            .then(data =>  {
-                axios.get(BACKEND_PATH+'/static'+data.file_src,
+            .then(data => {
+                axios.get(BACKEND_PATH + '/static' + data.file_src,
                     {responseType: "blob"})
                     .then(res => res.data as Blob
                     )
                     .then(data => {
-                        let userImageFile = new File([data],'user_image')
+                        let userImageFile = new File([data], 'user_image')
                         setInitFile(userImageFile)
                         setSelectedFile(userImageFile)
                     })
@@ -297,9 +297,9 @@ function ChangeProfileImage({setLoading} : {setLoading: any}) {
     function uploadImageToServer() {
         setLoading(true)
         let formData = new FormData()
-        formData.append('user_image',selectedFile as File)
-        axios.post(BACKEND_PATH+'/user/image',formData , {
-            headers:{
+        formData.append('user_image', selectedFile as File)
+        axios.post(BACKEND_PATH + '/user/image', formData, {
+            headers: {
                 'Authorization': 'Bearer ' + user.token
             }
         })
@@ -310,14 +310,15 @@ function ChangeProfileImage({setLoading} : {setLoading: any}) {
 
     let inputRef = useRef<HTMLInputElement>(null)
 
-    function inputButtonClickHandler(){
+    function inputButtonClickHandler() {
         // @ts-ignore
         inputRef.current.click()
     }
 
     return (
         <div className="user-profile-image-wrapper">
-            {selectedFile && <img className="user-image" src={URL.createObjectURL(selectedFile as File)}/> }
+            {selectedFile && <img className="user-image"
+                                  src={URL.createObjectURL(selectedFile as File)}/>}
             <input type="file"
                    name="user-profile-image"
                    accept=".png,.jpg,.jpeg,.gif"
@@ -331,7 +332,9 @@ function ChangeProfileImage({setLoading} : {setLoading: any}) {
                 </button>
                 {isChanged && (
                     <>
-                        <button className="button rounded" onClick={uploadImageToServer}>Загрузить изображение</button>
+                        <button className="button rounded"
+                                onClick={uploadImageToServer}>Загрузить изображение
+                        </button>
                     </>
                 )}
             </div>

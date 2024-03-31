@@ -24,7 +24,6 @@ export default class Post_controller {
         try {
             const current_user_id = req.current_user.id
             const post_id = req.params.post_id
-            console.log(current_user_id, post_id)
             const query_res = await Post.deleteUserLike(current_user_id, post_id)
             // console.log(query_res)
             return res.status(200).json({

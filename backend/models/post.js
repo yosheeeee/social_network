@@ -51,7 +51,6 @@ export default class Post {
                                         WHERE id = $1`, [post_id])
 
         if (query_res.rows[0].user_id !== user_id) {
-            console.log(query_res.rows[0])
             let notification_content = `<p>Пользователь <a href="http://localhost:3000/user/${query_res.rows[0].user_id}">${query_res.rows[0].user_name}</a> поставил лайк <a href="http://localhost:3000/user/${user_id}">вашей записи</a></p>`
 
             await db.query(`
