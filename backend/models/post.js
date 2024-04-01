@@ -2,7 +2,11 @@ import {db} from "../db.js";
 
 export default class Post {
     static async addPost(user_id, post_content) {
-        await db.query('INSERT INTO posts (content, user_id) VALUES ($1,$2)', [post_content, user_id])
+        return await db.query('INSERT INTO posts (content, user_id) VALUES ($1,$2) RETURNING id', [post_content, user_id])
+    }
+
+    static async getPostImages(post_id){
+        return await db.query("SELECT file_src FROM files WHERE meta_key='post_image' AND meta_value=$1",[post_id])
     }
 
     static async getUserPosts(user_id) {

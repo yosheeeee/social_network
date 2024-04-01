@@ -249,7 +249,6 @@ export default class User_controller {
             console.log(e)
             return res.status(400).json({message : "Error AddUserImage function", e: e})
         }
-
     }
 
     static async GetUserImage(req,res){
@@ -274,11 +273,26 @@ export default class User_controller {
         try{
             let user = req.current_user
             let post_content = req.body.post_content
-            // TODO: добавить изображения к бэку
+            let post = await Post.addPost(user.id, post_content)
+            post = post.rows[0]
             let post_images = req.files
-            await Post.addPost(user.id, post_content)
+            if (!fs.existsSync(FILE_DIR_PATH + '/posts')){
+                fs.mkdirSync(FILE_DIR_PATH+'/posts')
+            }
+            for(let key of Object.keys(post_images)){
+                let file = post_images[key]
+                let post_folder = FILE_DIR_PATH + '/posts/'+post.id
+                if (!fs.existsSync(post_folder)){
+                    fs.mkdirSync(post_folder)
+                }
+                let file_path = post_folder +'/'+ key +'.'+file.name.split('.').pop()
+                console.log(file_path)
+                file.mv(file_path)
+                DbFile.AddFile(file_path.replace(FILE_DIR_PATH,''),'post_image',post.id)
+            }
             return res.status(200).json({mesage: "ok"})
         }catch (e) {
+            console.log(e)
             return res.status(400).json({
                 error: e.message,
                 function: "AddUserPost"

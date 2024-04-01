@@ -20,6 +20,23 @@ export default class Post_controller {
         }
     }
 
+    static async getPostImages(req,res){
+        try{
+            const post_id = req.params.post_id
+            let query_res = await Post.getPostImages(post_id)
+            query_res = query_res.rows.length ? query_res.rows : []
+            return res.status(200).json({
+                images: query_res
+            })
+        }catch(e){
+            console.log(e)
+            return res.status(400).json({
+                error: e,
+                funciton: 'getPostImages'
+            })
+        }
+    }
+
     static async deleteUserLike(req, res) {
         try {
             const current_user_id = req.current_user.id

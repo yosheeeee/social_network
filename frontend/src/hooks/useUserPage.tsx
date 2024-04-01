@@ -3,13 +3,13 @@ import {useTypeSelector} from "./useTypeSelector";
 import {Dispatch} from "redux";
 import {useDispatch} from "react-redux";
 import {Link, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {ChangeEvent, useEffect, useMemo, useRef, useState} from "react";
 import {convertToRaw, EditorState} from "draft-js";
 import axios from "axios";
 import {BACKEND_PATH} from "../constants";
 import draftToHtml from "draftjs-to-html";
 import PostStats, {IPostStats} from "../components/post-stats/postStats";
-import NewPostForm from "../modules/new-post-form/newPost";
+import NewPostForm, {PostImages} from "../modules/new-post-form/newPost";
 import Loader from "../components/Loader/Loader";
 
 export type UserPageParams = {
@@ -48,8 +48,6 @@ export default function useUserPage() {
     })
     let [userImageSrc, setUserImageSrc] = useState("")
     let [userPosts, setUserPosts] = useState<UserPost[]>([])
-    let [newPostState, setNewPostState] = useState(EditorState.createEmpty())
-    let newPostImagesState = useState<FileList | null>(null)
 
     //подгрузка данных о пользователе
     useEffect(() => {
@@ -72,32 +70,6 @@ export default function useUserPage() {
         setLoading(false)
     }, [userPageParams]);
 
-    // функция отправки нового поста на бэк
-    function sendNewPostHandler() {
-        if (!newPostState.getCurrentContent().hasText()) return
-        let filesFormData = new FormData()
-        if (newPostImagesState[0] != null){
-
-            for (let i =0; i< newPostImagesState[0]?.length; i++ ){
-                filesFormData.append('post_file_'+i, newPostImagesState[0][i])
-            }
-        }
-        filesFormData.append('post_content' , draftToHtml(convertToRaw(newPostState.getCurrentContent())))
-        axios.post(BACKEND_PATH + '/user/post',
-            filesFormData,
-            {
-            headers: {
-                Authorization: "Bearer " + user.token
-            }
-        })
-            .then(res => res.data)
-            .then(data => {
-                console.log(data)
-                getUserPosts()
-                setNewPostState(EditorState.createEmpty())
-            })
-            .catch(e => console.log(e.response))
-    }
 
 
     //получение данных о пользователе с бека
@@ -111,16 +83,91 @@ export default function useUserPage() {
 
     // форма добавления записи пользователя
     function PostForm() {
+        const inputFileRef = useRef<HTMLInputElement>(null)
+        let [newPostState, setNewPostState] = useState(EditorState.createEmpty())
+        let newPostImagesState = useState<FileList | null>(null)
+
+        // функция отправки нового поста на бэк
+        function sendNewPostHandler() {
+            if (!newPostState.getCurrentContent().hasText()) return
+            let filesFormData = new FormData()
+            if (newPostImagesState[0] != null) {
+
+                for (let i = 0; i < newPostImagesState[0]?.length; i++) {
+                    filesFormData.append('post_file_' + i, newPostImagesState[0][i])
+                }
+            }
+            filesFormData.append('post_content', draftToHtml(convertToRaw(newPostState.getCurrentContent())))
+            axios.post(BACKEND_PATH + '/user/post',
+                filesFormData,
+                {
+                    headers: {
+                        Authorization: "Bearer " + user.token
+                    }
+                })
+                .then(res => res.data)
+                .then(data => {
+                    console.log(data)
+                    getUserPosts()
+                    setNewPostState(EditorState.createEmpty())
+                })
+                .catch(e => console.log(e.response))
+        }
+
+        function openFilesInput() {
+            // @ts-ignore
+            inputFileRef.current.click()
+        }
+
+        function changeInputFiles(e: ChangeEvent<HTMLInputElement>) {
+            if (e.target.files !== null && e.target.files.length > 10) {
+                alert('Максимальное количество файлов 10')
+                return
+            }
+            if (e.target.files !== null) {
+                for (let i = 0; i < e.target.files.length; i++) {
+                    if (!e.target.files[i].type.includes('image')) {
+                        alert(`Файл №${i + 1} не является изображениeм`)
+                        return
+                    }
+                }
+            }
+            newPostImagesState[1](e.target.files)
+        }
+
+        function clearImages() {
+            newPostImagesState[1](null)
+        }
+
+
         return (
             <>
                 {parseInt(userPageParams.id as string) == user.id && (
                     <>
                         <NewPostForm
-                            postImages={newPostImagesState[0]}
-                            setPostImages={newPostImagesState[1]}
                             editorValue={newPostState}
                             setEditorValue={setNewPostState}
-                            submitFromHandler={sendNewPostHandler}/>
+                        />
+                        <input type="file"
+                               name="post-files"
+                               id="post-files"
+                               accept=".png,.jpg,.jpeg,.gif"
+                               multiple={true}
+                               onChange={changeInputFiles}
+                               ref={inputFileRef}/>
+
+                        <PostImages images={newPostImagesState[0]}/>
+                        <div className="btns">
+                            <button className="button rounded post-files"
+                                    onClick={openFilesInput}><i className="fa-solid fa-images"></i></button>
+                            {newPostImagesState[0] !== null && <button className="rounded button"
+                                                                       onClick={clearImages}>
+                                <i className='fa-solid fa-xmark'></i>
+                            </button>}
+                            <button className={'button rounded'}
+                                    onClick={sendNewPostHandler}>Написать
+                            </button>
+                        </div>
                     </>
                 )}
             </>
@@ -129,38 +176,40 @@ export default function useUserPage() {
     }
 
     // Вывод кнопки подписаться/редактировать профиль в хедере страницы пользователя
-    function HeaderButton(){
-        return(
+    function HeaderButton() {
+        return (
             <>
                 {parseInt(userPageParams.id as string) == user.id && <EditProfileButton/>}
                 {parseInt(userPageParams.id as string) != user.id &&
-                    <SubscribeToUser user_id={parseInt(userPageParams.id as string)} current_user={user}/>
+                    <SubscribeToUser user_id={parseInt(userPageParams.id as string)}
+                                     current_user={user}/>
                 }
             </>
         )
     }
 
 
-    return {userImageSrc , userData , PostForm , HeaderButton , loading , userPosts}
+    return {userImageSrc, userData, PostForm, HeaderButton, loading, userPosts}
 }
 
 // кнопка подписки на пользователя
-function SubscribeToUser({user_id, current_user}: {user_id: number, current_user:UserState}){
-    let [button_text,set_button_text] = useState<any>("")
+function SubscribeToUser({user_id, current_user}: { user_id: number, current_user: UserState }) {
+    let [button_text, set_button_text] = useState<any>("")
     let [isSubscribe, set_is_subscribe] = useState(false)
-    function onClick(){
+
+    function onClick() {
         set_button_text(<Loader/>)
-        if (!isSubscribe){
-            axios.post(BACKEND_PATH+'/user/subscribe',{
-                    user_id:user_id
+        if (!isSubscribe) {
+            axios.post(BACKEND_PATH + '/user/subscribe', {
+                    user_id: user_id
                 },
                 {
-                    headers:{
+                    headers: {
                         'Authorization': 'Bearer ' + current_user.token
                     }
                 }
             )
-                .then(res =>res.data)
+                .then(res => res.data)
                 .then(data => {
                     set_button_text("Отписаться")
                     set_is_subscribe(true)
@@ -169,10 +218,9 @@ function SubscribeToUser({user_id, current_user}: {user_id: number, current_user
                     console.log(e)
                     set_button_text("Ошибка подписки")
                 })
-        }
-        else{
-            axios.delete(BACKEND_PATH+'/user/subscribe/'+current_user.id+'/'+user_id,{
-                headers:{
+        } else {
+            axios.delete(BACKEND_PATH + '/user/subscribe/' + current_user.id + '/' + user_id, {
+                headers: {
                     'Authorization': 'Bearer ' + current_user.token
                 }
             }).then(data => {
@@ -187,14 +235,14 @@ function SubscribeToUser({user_id, current_user}: {user_id: number, current_user
 
     useEffect(() => {
         set_button_text(<Loader/>)
-        axios.get(BACKEND_PATH+'/user/checksubscribe/'+current_user.id+'/'+user_id)
+        axios.get(BACKEND_PATH + '/user/checksubscribe/' + current_user.id + '/' + user_id)
             .then(res => res.data)
-            .then(data=> {
+            .then(data => {
                 set_is_subscribe(data.result)
                 console.log(data)
-                if (data.result){
+                if (data.result) {
                     set_button_text("Отписаться")
-                }else{
+                } else {
                     set_button_text("Подписаться")
                 }
             })
@@ -203,7 +251,8 @@ function SubscribeToUser({user_id, current_user}: {user_id: number, current_user
 
     return (
         <>
-            <button className="button rounded accent-color edit-profile-link" onClick={onClick}>{button_text}</button>
+            <button className="button rounded accent-color edit-profile-link"
+                    onClick={onClick}>{button_text}</button>
         </>
     )
 }

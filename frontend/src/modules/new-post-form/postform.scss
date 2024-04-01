@@ -2,40 +2,7 @@
 #post-form-container{
   margin-top: 10px;
 
-  .btns{
-      margin-top: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 
-    .post-files{
-      color: $main-accent-color;
-
-      &:hover{
-        color: black;
-      }
-    }
-  }
-
-  input[type="file"]{
-      display: none;
-  }
-
-  .files{
-    margin-top: 10px;
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    align-items: center;
-    gap: 5px;
-
-    img{
-      border-radius: 5px;
-      width: 100%;
-      display: block;
-      object-fit: contain;
-      grid-column: span 1;
-    }
-  }
 
   .rdw-option-wrapper {
     position: relative;
@@ -44,5 +11,40 @@
   .rdw-dropdown-optionwrapper {
     position: absolute;
     z-index: 1000;
+  }
+}
+
+input[type="file"]{
+  display: none;
+}
+
+.files{
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  align-items: center;
+  gap: 5px;
+
+  img{
+    border-radius: 5px;
+    width: 100%;
+    display: block;
+    object-fit: contain;
+    grid-column: span 1;
+  }
+}
+
+.btns{
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .post-files{
+    color: $main-accent-color;
+
+    &:hover{
+      color: black;
+    }
   }
 }
