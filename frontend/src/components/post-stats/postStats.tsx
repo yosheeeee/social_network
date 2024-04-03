@@ -8,6 +8,7 @@ import Popup from "../popup/Popup";
 import PostComments from "../comments-popup/postComments";
 import {useNavigate} from "react-router-dom";
 
+
 export interface IPostStats {
     likes: number,
     comments: number,
@@ -39,10 +40,6 @@ export default function PostStats({likes, comments, id}: IPostStats) {
             setIsLoading(false)
         }
     }, [likes,comments,id]);
-
-    // useEffect(() => {
-    //     console.log(id, isLiked)
-    // }, [isLiked]);
 
     function likeClickHandler() {
         if (current_user.isLoggedIn) {

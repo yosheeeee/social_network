@@ -16,7 +16,7 @@ export type UserPageParams = {
     id: string | undefined
 }
 
-export interface UserData {
+export interface IUserData {
     user_name: string | null,
     user_login: string | null,
     user_mail?: string | null,
@@ -24,9 +24,14 @@ export interface UserData {
     subscribers: number,
 }
 
-export interface UserPost extends IPostStats {
+export interface IUserPost extends IPostStats {
     content: string,
     post_date: number,
+}
+
+export interface IFeedPost extends IUserPost, IUserData{
+    user_image_src: string,
+    user_id: number
 }
 
 export default function useUserPage() {
@@ -40,20 +45,20 @@ export default function useUserPage() {
     let userDispatch: Dispatch<UserAction> = useDispatch()
     const userPageParams = useParams<UserPageParams>()
     let [loading, setLoading] = useState(false)
-    let [userData, setUserData] = useState<UserData>({
+    let [userData, setUserData] = useState<IUserData>({
         user_name: null,
         user_login: null,
         subscribers: 0,
         subscribings: 0
     })
     let [userImageSrc, setUserImageSrc] = useState("")
-    let [userPosts, setUserPosts] = useState<UserPost[]>([])
+    let [userPosts, setUserPosts] = useState<IUserPost[]>([])
 
     //подгрузка данных о пользователе
     useEffect(() => {
         setLoading(true)
         axios.get(BACKEND_PATH + '/user/' + userPageParams.id)
-            .then(res => res.data as UserData)
+            .then(res => res.data as IUserData)
             .then(data => {
                 setUserData(data)
             })
@@ -75,7 +80,7 @@ export default function useUserPage() {
     //получение данных о пользователе с бека
     function getUserPosts() {
         axios.get(BACKEND_PATH + '/user/posts/' + userPageParams.id)
-            .then(res => res.data.posts as UserPost[])
+            .then(res => res.data.posts as IUserPost[])
             .then(data => {
                 setUserPosts(data)
             })

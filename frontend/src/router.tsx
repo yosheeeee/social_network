@@ -38,6 +38,10 @@ const routes : RouteObject[] = [
                 ]
             },
             {
+                path: 'post/:postId/comments',
+                element: <PostComments/>
+            },
+            {
                 path:'settings',
                 element: <Settings/>
             }

@@ -8,7 +8,7 @@ import {BACKEND_PATH} from "../../constants";
 import axios from "axios";
 import Loader from "../../components/Loader/Loader";
 import "./settings.scss"
-import {UserData} from "../../hooks/useUserPage";
+import {IUserData} from "../../hooks/useUserPage";
 
 interface SettingsInput {
     input_type: string,
@@ -88,7 +88,7 @@ export default function Settings() {
                     'Authorization': 'Bearer ' + user.token
                 }
             })
-                .then(res => res.data as UserData)
+                .then(res => res.data as IUserData)
                 .then(data => {
                     setLoading(false)
                     set_settings_fields(prevState => {

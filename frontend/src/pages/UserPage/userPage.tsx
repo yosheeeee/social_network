@@ -4,7 +4,7 @@ import Loader from "../../components/Loader/Loader";
 import "./user_page.scss"
 import UserBackground from "../../images/user_header_bg.png"
 import UserImage from "../../components/UserImage";
-import useUserPage, {UserData, UserPageParams, UserPost} from "../../hooks/useUserPage";
+import useUserPage, {IUserData, UserPageParams, IUserPost} from "../../hooks/useUserPage";
 import PostStats from "../../components/post-stats/postStats";
 import {Outlet} from "react-router-dom";
 import axios from "axios";
@@ -49,7 +49,7 @@ export default function UserPage() {
     )
 }
 
-function PostTemplate(post: UserPost) {
+function PostTemplate(post: IUserPost) {
     let date = new Date(post.post_date)
     let options = {
         year: 'numeric',

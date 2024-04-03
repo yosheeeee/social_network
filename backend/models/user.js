@@ -146,9 +146,11 @@ export default class User {
 
     static async GetNotifications(user_id){
         let query_result = await db.query(`
-              SELECT * FROM notifications_table WHERE user_id = $1
-              ORDER BY notification_read DESC , notification_date DESC
-        `,[user_id])
+            SELECT *
+            FROM notifications_table
+            WHERE user_id = $1
+            ORDER BY notification_read DESC, notification_date DESC
+        `, [user_id])
 
         query_result = query_result?.rows?.length ? query_result.rows : []
 
