@@ -7,7 +7,6 @@ import DbFile from "../models/File.js";
 import Post from "../models/post.js";
 
 
-
 export default class User_controller {
     // подписка на пользователя
     static async subscribeUser(req, res) {
@@ -22,13 +21,13 @@ export default class User_controller {
     }
 
     // отписка от пользователя
-    static async unsubscribeUser(req,res){
-        try{
+    static async unsubscribeUser(req, res) {
+        try {
             const user_from_id = req.current_user.id
             const user_to_id = req.params.to_id
-            await User.unsubscribeUser(user_from_id,user_to_id)
-            return res.json({message:"success"})
-        }catch (e){
+            await User.unsubscribeUser(user_from_id, user_to_id)
+            return res.json({message: "success"})
+        } catch (e) {
             console.log(e.message)
             return res.status(400).json({
                 message: e.message
@@ -43,7 +42,7 @@ export default class User_controller {
             const user_to_id = req.params.to_id
             let result = await User.checkSubscribe(user_from_id, user_to_id)
             return res.json({
-                result:result
+                result: result
             })
         } catch (e) {
             console.log(e)
@@ -54,17 +53,18 @@ export default class User_controller {
             )
         }
     }
+
     // получение подписок пользователя
-    static async getUserSubscribings(req,res){
-        try{
+    static async getUserSubscribings(req, res) {
+        try {
             const user_id = req.params.user_id
             const subscribers = await User.getUserSubscribings(user_id)
-            if (!subscribers.rows.length){
-                return  res.status(200).json([])
-            }else{
+            if (!subscribers.rows.length) {
+                return res.status(200).json([])
+            } else {
                 return res.status(200).json(subscribers.rows)
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             return res.status(400).json({
                 message: e.message,
@@ -74,16 +74,16 @@ export default class User_controller {
     }
 
     // получение подпискичов пользователя
-    static async getUserSubscribers(req,res){
-        try{
+    static async getUserSubscribers(req, res) {
+        try {
             const user_id = req.params.user_id
             const subscribers = await User.GetUserSubscribers(user_id)
-            if (!subscribers.rows.length){
-                return  res.status(200).json([])
-            }else{
+            if (!subscribers.rows.length) {
+                return res.status(200).json([])
+            } else {
                 return res.status(200).json(subscribers.rows)
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             return res.status(400).json({
                 message: e.message,
@@ -132,8 +132,8 @@ export default class User_controller {
     }
 
     // получение данных для текущего пользователя
-    static async getCurrentUser(req,res){
-        try{
+    static async getCurrentUser(req, res) {
+        try {
             const user_id = req.current_user.id
             let query_result = await User.getUserById(user_id)
             if (!query_result.rows.length) {
@@ -148,7 +148,7 @@ export default class User_controller {
                     user_mail: user.user_mail
                 })
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             return res.status(400).json(
                 {
@@ -194,24 +194,24 @@ export default class User_controller {
     static async ChangeUserData(req, res) {
         try {
             const current_user = req.current_user
-            if (req.body.user_login && req.body.user_name && req.body.user_mail){
+            if (req.body.user_login && req.body.user_name && req.body.user_mail) {
                 let user_data = {
                     login: req.body.user_login,
                     username: req.body.user_name,
                     usermail: req.body.user_mail
                 }
-                try{
+                try {
                     await User.ChangeUserData(current_user.id, user_data)
-                }catch (e) {
+                } catch (e) {
                     console.log(e)
                     return res.status(400).text(e.message)
                 }
-                if (req.body.new_password){
+                if (req.body.new_password) {
                     let new_password = req.body.new_password
                     const hashpassword = bcrypt.hashSync(new_password, 7)
-                    try{
-                        await User.changePassword(hashpassword,current_user.id)
-                    }catch (e) {
+                    try {
+                        await User.changePassword(hashpassword, current_user.id)
+                    } catch (e) {
                         console.log(e)
                         return res.status(400).text(e.message)
                     }
@@ -232,66 +232,68 @@ export default class User_controller {
         }
     }
 
-    static async AddUserImage(req,res){
-        try{
+    static async AddUserImage(req, res) {
+        try {
             const file = req.files.user_image
             let user_folder = FILE_DIR_PATH + '/' + req.current_user.id
-            if (!fs.existsSync(user_folder)){
+            if (!fs.existsSync(user_folder)) {
                 fs.mkdirSync(user_folder)
             }
-            let file_path = user_folder + '/user_image.'+file.name.split('.').pop()
+            let file_path = user_folder + '/user_image.' + file.name.split('.').pop()
             file.mv(file_path)
-            await DbFile.DeleteFiles('user_image',req.current_user.id)
-            await DbFile.AddFile(file_path.replace(FILE_DIR_PATH,''),'user_image',req.current_user.id)
+            await DbFile.DeleteFiles('user_image', req.current_user.id)
+            await DbFile.AddFile(file_path.replace(FILE_DIR_PATH, ''), 'user_image', req.current_user.id)
             return res.status(200).json({message: 'file has uploaded'})
 
-        }catch (e){
+        } catch (e) {
             console.log(e)
-            return res.status(400).json({message : "Error AddUserImage function", e: e})
+            return res.status(400).json({message: "Error AddUserImage function", e: e})
         }
     }
 
-    static async GetUserImage(req,res){
-        try{
+    static async GetUserImage(req, res) {
+        try {
             let user_id = req.params.id
-            let files = await DbFile.GetFiles('user_image',user_id)
+            let files = await DbFile.GetFiles('user_image', user_id)
             let data = {
                 message: "ok",
                 file_src: '/user_default_image.png'
             }
-            if (files.length != 0){
+            if (files.length != 0) {
                 data.file_src = files[0].file_src
             }
             return res.status(200).json(data)
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             return res.status(400).json({message: "error GetUserProfileImage", e: e.message})
         }
     }
 
-    static async AddUserPost(req,res){
-        try{
+    static async AddUserPost(req, res) {
+        try {
             let user = req.current_user
             let post_content = req.body.post_content
             let post = await Post.addPost(user.id, post_content)
             post = post.rows[0]
             let post_images = req.files
-            if (!fs.existsSync(FILE_DIR_PATH + '/posts')){
-                fs.mkdirSync(FILE_DIR_PATH+'/posts')
+            if (!fs.existsSync(FILE_DIR_PATH + '/posts')) {
+                fs.mkdirSync(FILE_DIR_PATH + '/posts')
             }
-            for(let key of Object.keys(post_images)){
-                let file = post_images[key]
-                let post_folder = FILE_DIR_PATH + '/posts/'+post.id
-                if (!fs.existsSync(post_folder)){
-                    fs.mkdirSync(post_folder)
+            if (post_images) {
+                for (let key of Object.keys(post_images)) {
+                    let file = post_images[key]
+                    let post_folder = FILE_DIR_PATH + '/posts/' + post.id
+                    if (!fs.existsSync(post_folder)) {
+                        fs.mkdirSync(post_folder)
+                    }
+                    let file_path = post_folder + '/' + key + '.' + file.name.split('.').pop()
+                    console.log(file_path)
+                    file.mv(file_path)
+                    DbFile.AddFile(file_path.replace(FILE_DIR_PATH, ''), 'post_image', post.id)
                 }
-                let file_path = post_folder +'/'+ key +'.'+file.name.split('.').pop()
-                console.log(file_path)
-                file.mv(file_path)
-                DbFile.AddFile(file_path.replace(FILE_DIR_PATH,''),'post_image',post.id)
             }
             return res.status(200).json({mesage: "ok"})
-        }catch (e) {
+        } catch (e) {
             console.log(e)
             return res.status(400).json({
                 error: e.message,
@@ -300,15 +302,15 @@ export default class User_controller {
         }
     }
 
-    static async GetUserPosts(req,res){
-        try{
+    static async GetUserPosts(req, res) {
+        try {
             let user_id = req.params.user_id
             let db_res = await Post.getUserPosts(user_id)
             let user_posts = db_res.rows?.length ? db_res.rows : []
             return res.status(200).json({
                 posts: user_posts
             })
-        }catch (e) {
+        } catch (e) {
             return res.status(400).json({
                 error: e.message,
                 function: "GetUserPosts"
@@ -316,13 +318,13 @@ export default class User_controller {
         }
     }
 
-    static async CheckUserToPostLike(req, res){
-        try{
+    static async CheckUserToPostLike(req, res) {
+        try {
             const current_user_id = req.current_user.id
             const post_id = req.params.post_id
             const query_res = await Post.getUserToPostLikes(current_user_id, post_id)
             return res.status(200).json(query_res.rows[0])
-        }catch (e) {
+        } catch (e) {
             return res.status(400).json({
                 e: e.message,
                 function: "CheckUserToPostLike"
@@ -330,15 +332,31 @@ export default class User_controller {
         }
     }
 
-    static async GetUserNotifications(req, res){
-        try{
+    static async GetUserNotifications(req, res) {
+        try {
             const current_user_id = req.current_user.id
             const user_notifications = await User.GetNotifications(current_user_id)
             return res.status(200).json(user_notifications)
-        }catch(e){
+        } catch (e) {
             return res.status(400).json({
                 e: e.message,
                 function: 'GetUserNotification'
+            })
+        }
+    }
+
+    static async getUserFeed(req, res) {
+        try {
+            const current_user_id = req.current_user?.id
+            let query_result = await User.getUserFeed(current_user_id)
+            query_result = query_result.rows.length ? query_result.rows : []
+            return res.status(200).json({
+                posts: query_result
+            })
+        } catch (e) {
+            return res.status(400).json({
+                e: e.message,
+                function: 'UserFeed'
             })
         }
     }

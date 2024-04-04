@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useRef, useState} from "react";
+import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import FeedPost from "../../components/feed-post/feedPost";
 import {IFeedPost, IUserPost} from "../../hooks/useUserPage";
 import "./feed.scss"
@@ -8,58 +8,59 @@ import draftToHtml from "draftjs-to-html";
 import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import {useTypeSelector} from "../../hooks/useTypeSelector";
+import Loader from "../../components/Loader/Loader";
 
 export function Feed() {
-    const [posts, setPosts] = useState<IFeedPost[]>([
-        {
-            user_name: "Антипин Егор",
-            user_login: "admin",
-            comments: 0,
-            likes: 0,
-            subscribings: 5,
-            user_mail: "test@email.com",
-            id: 20,
-            post_date: 0,
-            user_image_src: '/20/user_image.gif',
-            content: "<p>Hello world</p>",
-            subscribers: 0,
-            user_id: 20
-        },
-        {
-            user_name: "Антипин Егор",
-            user_login: "admin",
-            comments: 0,
-            likes: 0,
-            subscribings: 5,
-            user_mail: "test@email.com",
-            id: 20,
-            post_date: 0,
-            user_image_src: '/20/user_image.gif',
-            content: "<p>Hello world</p>",
-            subscribers: 0,
-            user_id: 20
-        }
-    ])
+    const [posts, setPosts] = useState<IFeedPost[]>([])
     const user = useTypeSelector(state => state.user)
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        setLoading(true)
+        let config = {}
+        if (user.isLoggedIn) {
+            config = {
+                headers: {
+                    Authorization: user.token
+                }
+            }
+        }
+        axios.get(BACKEND_PATH + '/user/feed/get', config)
+            .then(res => res.data?.posts as IFeedPost[])
+            .then(data => {
+                setPosts(data)
+            })
+            .catch(e => console.log(e))
+            .finally(() => setLoading(false))
+
+    }, [user]);
+
 
     return (
         <div id={'feed-page'}>
             <h1>Главная страница</h1>
-            <PostForm/>
-            <h2>Новые записи:</h2>
-            <div className="posts">
-                {posts.map(post => <FeedPost {...post}/>)}
-            </div>
+            {
+                loading ?
+                    <Loader/>
+                    : <>
+                        <PostForm/>
+                        <h2>Новые записи:</h2>
+                        <div className="posts">
+                            {posts.map(post => <FeedPost {...post}/>)}
+                        </div>
+                    </>
+            }
         </div>
     )
 
     //получение данных о пользователе с бека
     function getUserPosts() {
-        axios.get(BACKEND_PATH + '/user/feed/' + user.id)
+        axios.get(BACKEND_PATH + '/user/feed/get' + user.id)
             .then(res => res.data.posts as IFeedPost[])
             .then(data => {
                 setPosts(data)
             })
+            .catch(e => console.log(e))
     }
 
 // форма добавления записи пользователя

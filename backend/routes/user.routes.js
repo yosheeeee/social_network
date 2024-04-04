@@ -3,6 +3,7 @@ import AuthMiddleware from "../middleware/authMiddleware.js";
 import User from "../models/user.js";
 import User_controller from "../controllers/user_controller.js";
 import checkDialogMiddleware from "../middleware/checkDialogMiddleware.js";
+import AllowAnonymusMiddleware from "../middleware/allowAnonymusMiddleware.js";
 
 
 const user_router = new Router()
@@ -23,4 +24,5 @@ user_router.post('/post',AuthMiddleware, User_controller.AddUserPost)
 user_router.get('/posts/:user_id',User_controller.GetUserPosts)
 user_router.get('/check-like/:post_id',AuthMiddleware, User_controller.CheckUserToPostLike)
 user_router.get('/notifications/get', AuthMiddleware, User_controller.GetUserNotifications)
+user_router.get('/feed/get',AllowAnonymusMiddleware, User_controller.getUserFeed)
 export default user_router

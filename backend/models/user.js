@@ -59,89 +59,81 @@ export default class User {
         }
     }
 
-    // static async getUserDialog(dialog_id) {
-    //     const query_result = await db.query(
-    //         "SELECT * FROM messages WHERE dialog_id = $1 ORDER BY message_date DESC", [dialog_id]
-    //     )
-    //     return query_result.rows
-    // }
-    //
-    // static async getUserDialogs(user_id) {
-    //     const query_result = await db.query(
-    //         `
-    //             SELECT dialogs.dialog_id as dialog_id,first_user,second_user, message.user_from, message.message_content, message.message_date FROM dialogs
-    //                                                                                                                                                     JOIN (
-    //                 SELECT messages.dialog_id , messages.user_from,messages.message_content,message_date
-    //                 FROM messages
-    //                 WHERE dialog_id = 1
-    //                 ORDER BY message_date DESC
-    //                 LIMIT 1
-    //             ) as message
-    //                                                                                                                                                          ON dialogs.dialog_id = message.dialog_id
-    //             WHERE first_user = $1 OR second_user = $1
-    //             ORDER BY message_date DESC
-    //         `
-    //         , [user_id]
-    //     )
-    //
-    //     let rows = query_result.rows
-    //     rows.forEach(row => {
-    //         if (row.first_user === user_id){
-    //             row.user_id = row.second_user
-    //         }else{
-    //             row.user_id = row.first_user
-    //         }
-    //         delete row.first_user
-    //         delete row.second_user
-    //     })
-    //     console.log(rows)
-    //     return rows
-    // }
-    //
-    // static async checkUserDialogAccess(user_id, dialog_id) {
-    //     const query_result = await db.query(
-    //         "SELECT * FROM dialogs WHERE dialog_id = $1", [dialog_id]
-    //     )
-    //     if (query_result.rows.length == 0) return {
-    //         access: false,
-    //         reason: "dialog not exist"
-    //     }
-    //     let dialog = query_result.rows[0]
-    //     if (dialog.first_user != user_id && dialog.second_user != user_id) return {
-    //         access: false,
-    //         reason: "access denied"
-    //     }
-    //     return {
-    //         access: true
-    //     }
-    // }
-    //
-    // static async createDialog(first_user_id, second_user_id) {
-    //     let query_result = await db.query(
-    //         `SELECT *
-    //          FROM dialogs
-    //          WHERE first_user = $1 AND second_user = $2
-    //             OR first_user = $2
-    //             or second_user = $1`,
-    //         [first_user_id, second_user_id]
-    //     )
-    //     if (!query_result.rows.length) {
-    //         query_result = await db.query(
-    //             `INSERT INTO dialogs (first_user, second_user)
-    //              VALUES ($1, $2)
-    //              RETURNING *`,
-    //             [first_user_id, second_user_id]
-    //         )
-    //     }
-    //     return query_result.rows[0].dialog_id
-    // }
-    //
-    // static async sendMessage(dialog_id, user_from_id, message) {
-    //     await db.query(
-    //         "INSERT INTO messages  (dialog_id,user_from,message_content,message_date) VALUES ($1,$2,$3,current_timestamp)",
-    //         [dialog_id, user_from_id, message]
-    //     )
-    // }
+    static async getUserFeed(user_id){
+        if (user_id){
+            return await db.query(`
+                SELECT posts.id                                           as id,
+                       posts.post_date                                    as post_date,
+                       posts.content                                      as content,
+                       COALESCE(likes_table.likes, 0)                     as likes,
+                       COALESCE(comments_table.comments, 0)               as comments,
+                       users.user_id                                      as user_id,
+                       users.user_name                                    as user_name,
+                       users.user_mail                                    as user_mail,
+                       users.user_login                                   as user_login,
+                       COALESCE(file_src, '/user_default_image.png')      as user_image_src,
+                       COALESCE(subscribers_table.subscribers_count, 0)   as subscribers,
+                       COALESCE(subscribings_table.subscribings_count, 0) as subscribings
+                FROM posts
+                         LEFT JOIN (SELECT COUNT(*) as likes, post_id
+                                    FROM post_likes
+                                    GROUP BY post_id) as likes_table ON likes_table.post_id = posts.id
+                         LEFT JOIN (SELECT COUNT(*) as comments, post_id
+                                    FROM post_comments
+                                    GROUP BY post_comments.post_id) as comments_table
+                                   on posts.id = comments_table.post_id
+                         LEFT JOIN users ON posts.user_id = users.user_id
+                         LEFT JOIN files ON files.meta_value = posts.user_id AND files.meta_key = 'user_image'
+                         LEFT JOIN (SELECT COUNT(*) as subscribers_count, user_id_to as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_to) as subscribers_table
+                                   ON posts.user_id = subscribers_table.user_id
+                         LEFT JOIN (SELECT COUNT(*) as subscribings_count, user_id_from as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_from) as subscribings_table
+                                   ON posts.user_id = subscribings_table.user_id
+                GROUP BY id, post_date, content, likes, comments, users.user_id, user_name, user_mail, user_image_src,
+                         subscribers, subscribings
+                ORDER BY posts.post_date DESC
+            `)
+        }else{
+            return await db.query(`
+                SELECT posts.id                                           as id,
+                       posts.post_date                                    as post_date,
+                       posts.content                                      as content,
+                       COALESCE(likes_table.likes, 0)                     as likes,
+                       COALESCE(comments_table.comments, 0)               as comments,
+                       users.user_id                                      as user_id,
+                       users.user_name                                    as user_name,
+                       users.user_mail                                    as user_mail,
+                       users.user_login                                   as user_login,
+                       COALESCE(file_src, '/user_default_image.png')      as user_image_src,
+                       COALESCE(subscribers_table.subscribers_count, 0)   as subscribers,
+                       COALESCE(subscribings_table.subscribings_count, 0) as subscribings
+                FROM posts
+                         LEFT JOIN (SELECT COUNT(*) as likes, post_id
+                                    FROM post_likes
+                                    GROUP BY post_id) as likes_table ON likes_table.post_id = posts.id
+                         LEFT JOIN (SELECT COUNT(*) as comments, post_id
+                                    FROM post_comments
+                                    GROUP BY post_comments.post_id) as comments_table
+                                   on posts.id = comments_table.post_id
+                         LEFT JOIN users ON posts.user_id = users.user_id
+                         LEFT JOIN files ON files.meta_value = posts.user_id AND files.meta_key = 'user_image'
+                         LEFT JOIN (SELECT COUNT(*) as subscribers_count, user_id_to as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_to) as subscribers_table
+                                   ON posts.user_id = subscribers_table.user_id
+                         LEFT JOIN (SELECT COUNT(*) as subscribings_count, user_id_from as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_from) as subscribings_table
+                                   ON posts.user_id = subscribings_table.user_id
+                GROUP BY id, post_date, content, likes, comments, users.user_id, user_name, user_mail, user_image_src,
+                         subscribers, subscribings
+                ORDER BY posts.post_date DESC
+            `)
+        }
+    }
 
 
     static async GetNotifications(user_id){

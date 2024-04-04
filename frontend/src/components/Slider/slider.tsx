@@ -4,6 +4,7 @@ import "./slider.scss"
 export default function Slider({children, elementsOnPage}: { children: ReactNode, elementsOnPage: number }) {
     const [currentElem, setCurrentElem] = useState(0)
     const childrenLength = Children.count(children)
+    const justifyContent = childrenLength <= elementsOnPage ? 'center' : 'normal'
 
     function moveLeft() {
         setCurrentElem(prevState => prevState >= 1 ? prevState - 1 : childrenLength - elementsOnPage)
@@ -18,7 +19,7 @@ export default function Slider({children, elementsOnPage}: { children: ReactNode
         <div className="slider">
             <div className="slider-content-container">
                 <div className={"slider-content "+'elements--'+elementsOnPage}
-                     style={{transform: `translateX(${-100 / elementsOnPage * currentElem}%)`}}>
+                     style={{transform: `translateX(${-100 / elementsOnPage * currentElem}%)` , justifyContent: justifyContent}}>
                     {children}
                 </div>
             </div>
