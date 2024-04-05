@@ -5,8 +5,8 @@ export default class Post {
         return await db.query('INSERT INTO posts (content, user_id) VALUES ($1,$2) RETURNING id', [post_content, user_id])
     }
 
-    static async getPostImages(post_id){
-        return await db.query("SELECT file_src FROM files WHERE meta_key='post_image' AND meta_value=$1",[post_id])
+    static async getPostImages(post_id) {
+        return await db.query("SELECT file_src FROM files WHERE meta_key='post_image' AND meta_value=$1", [post_id])
     }
 
     static async getUserPosts(user_id) {
@@ -54,8 +54,15 @@ export default class Post {
                                                  LEFT JOIN users ON posts.user_id = users.user_id
                                         WHERE id = $1`, [post_id])
 
+        let liked_user = await db.query(`
+            Select *
+            from users
+            where user_id = $1
+        `, [user_id])
+        liked_user = liked_user.rows[0]
+
         if (query_res.rows[0].user_id !== user_id) {
-            let notification_content = `<p>Пользователь <a href="http://localhost:3000/user/${query_res.rows[0].user_id}">${query_res.rows[0].user_name}</a> поставил лайк <a href="http://localhost:3000/user/${user_id}">вашей записи</a></p>`
+            let notification_content = `<p>Пользователь <a href="http://localhost:3000/user/${user_id}">${liked_user.user_name}</a> поставил лайк <a href="http://localhost:3000/user/${query_res.rows[0].user_id}">вашей записи</a></p>`
 
             await db.query(`
                 INSERT INTO notifications_table (notification_type, user_id, notification_subject,
@@ -83,7 +90,7 @@ export default class Post {
                                       COALESCE(files.file_src, '/user_default_image.png') as user_image,
                                       comment_date,
                                       comment_content,
-            comment_id 
+                                      comment_id
                                FROM post_comments
                                         LEFT JOIN public.users ON post_comments.user_id = users.user_id
                                         LEFT JOIN public.files
@@ -102,35 +109,40 @@ export default class Post {
         )
 
         let query_result = await db.query(`
-            SELECT * FROM posts
-                LEFT JOIN users ON posts.user_id = users.user_id
-                WHERE posts.id = $1
-        `,[post_id])
+            SELECT *
+            FROM posts
+                     LEFT JOIN users ON posts.user_id = users.user_id
+            WHERE posts.id = $1
+        `, [post_id])
 
         query_result = query_result.rows[0]
 
-        if (query_result.user_id !== user_id){
+        if (query_result.user_id !== user_id) {
             let notification_content = `<p>Пользователь <a href="http://localhost:3000/user/${query_res.user_id}">${query_res.user_name}</a> оставил комментарий <a href="http://localhost:3000/user/${user_id}/post/${post_id}/comments">вашей записи</a></p>`
             await db.query(`
-                INSERT INTO notifications_table (notification_type, user_id, notification_subject, notification_content) 
-                VALUES ($1, $2,$3,$4) 
-            `,['comment', query_result.user_id, 'Лайк' , notification_content])
+                INSERT INTO notifications_table (notification_type, user_id, notification_subject, notification_content)
+                VALUES ($1, $2, $3, $4)
+            `, ['comment', query_result.user_id, 'Лайк', notification_content])
         }
     }
 
-    static async deletePost(post_id){
+    static async deletePost(post_id) {
         await db.query(
             `
-                DELETE FROM posts WHERE id = $1
+                DELETE
+                FROM posts
+                WHERE id = $1
             `
-        ,[post_id])
+            , [post_id])
     }
 
-    static async deleteComment(comment_id){
+    static async deleteComment(comment_id) {
         await db.query(
             `
-                DELETE FROM post_comments WHERE comment_id = $1
+                DELETE
+                FROM post_comments
+                WHERE comment_id = $1
             `
-        ,[comment_id])
+            , [comment_id])
     }
 }

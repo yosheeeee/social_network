@@ -222,7 +222,7 @@ export default class User {
             SELECT *
             FROM notifications_table
             WHERE user_id = $1
-            ORDER BY notification_read DESC, notification_date DESC
+            ORDER BY notification_read ASC , notification_date DESC
         `, [user_id])
 
         query_result = query_result?.rows?.length ? query_result.rows : []
@@ -233,6 +233,15 @@ export default class User {
         `,[user_id])
 
         return query_result
+    }
+
+    static async getNotificationsCount(user_id){
+        return await db.query(`
+            SELECT COALESCE(COUNT(*),0) as notifications_count FROM notifications_table   
+                WHERE user_id = $1
+                AND notification_read = 0
+            GROUP BY user_id
+        `,[user_id])
     }
 
 }

@@ -13,7 +13,8 @@ export interface SidebarMenuItemProps {
     icon_name: string,
     title: string,
     link?: string,
-    isDisabled: boolean
+    isDisabled: boolean,
+    counter?: number
 }
 
 export function SidebarMenu(props: SidebarMenuProps) {
@@ -33,6 +34,7 @@ export function SidebarMenu(props: SidebarMenuProps) {
 }
 
 function SidebarMenuItem(props: SidebarMenuItemProps | false) {
+    const user = useTypeSelector(state => state.user)
     if (props) {
         const {icon_name, title, link, isDisabled} = props
         return (
@@ -42,6 +44,7 @@ function SidebarMenuItem(props: SidebarMenuItemProps | false) {
                         <i className={"fa-solid " + icon_name}></i>
                         <NavLink to={link ? link : "#"}
                                  className={navData => navData.isActive ? "active" : ''}>{title}</NavLink>
+                        {props.counter && props.counter != 0  ?  <div className="notifications-counter">{props.counter}</div> : ""}
                     </div>
                 )
                 }

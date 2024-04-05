@@ -45,5 +45,20 @@
     a{
       text-decoration-thickness: 2px;
     }
+
+    position: relative;
+
+    .notifications-counter{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      left: 9px;
+      top: -4px;
+      padding: 1px 4px;
+      font-size: 10px;
+      background-color: red;
+      border-radius: 50%;
+    }
   }
 }

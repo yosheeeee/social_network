@@ -332,6 +332,20 @@ export default class User_controller {
         }
     }
 
+    static async GetUserNotificationsCount(req,res){
+        try {
+            const current_user_id = req.current_user.id
+           let user_notifications = await User.getNotificationsCount(current_user_id)
+            user_notifications = user_notifications.rows?.length ? user_notifications.rows[0].notifications_count : 0
+            return res.status(200).json({notifications_count: user_notifications})
+        } catch (e) {
+            return res.status(400).json({
+                e: e.message,
+                function: 'GetUserNotificationCount'
+            })
+        }
+    }
+
     static async GetUserNotifications(req, res) {
         try {
             const current_user_id = req.current_user.id

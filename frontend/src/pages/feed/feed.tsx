@@ -55,7 +55,11 @@ export function Feed() {
 
     //получение данных о пользователе с бека
     function getUserPosts() {
-        axios.get(BACKEND_PATH + '/user/feed/get' + user.id)
+        axios.get(BACKEND_PATH + '/user/feed/get',{
+            headers: {
+                Authorization: 'Bearer ' + user.token
+            }
+        })
             .then(res => res.data.posts as IFeedPost[])
             .then(data => {
                 setPosts(data)

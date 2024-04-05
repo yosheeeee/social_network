@@ -24,5 +24,6 @@ user_router.get('/notifications/get', AuthMiddleware, User_controller.GetUserNot
 user_router.get('/feed/get',AllowAnonymusMiddleware, User_controller.getUserFeed)
 user_router.get('/:user_id/commented-posts',User_controller.getUserCommentedPosts)
 user_router.get('/:user_id/liked-posts',User_controller.getUserLikedPosts)
+user_router.get('/notifications/count',AuthMiddleware, User_controller.GetUserNotificationsCount)
 
 export default user_router
