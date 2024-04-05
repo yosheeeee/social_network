@@ -8,9 +8,6 @@ import AllowAnonymusMiddleware from "../middleware/allowAnonymusMiddleware.js";
 
 const user_router = new Router()
 user_router.post('/subscribe',AuthMiddleware,User_controller.subscribeUser)
-// user_router.get('/dialog/:id',AuthMiddleware,checkDialogMiddleware,User_controller.getDialog)
-// user_router.get('/dialogs',AuthMiddleware,User_controller.getUserDialogs)
-// user_router.post('/message',AuthMiddleware,User_controller.sendMessage)
 user_router.get('/:id',User_controller.getUser)
 user_router.get('/',AuthMiddleware,User_controller.getCurrentUser)
 user_router.post('/changedata',AuthMiddleware,User_controller.ChangeUserData)
@@ -25,4 +22,7 @@ user_router.get('/posts/:user_id',User_controller.GetUserPosts)
 user_router.get('/check-like/:post_id',AuthMiddleware, User_controller.CheckUserToPostLike)
 user_router.get('/notifications/get', AuthMiddleware, User_controller.GetUserNotifications)
 user_router.get('/feed/get',AllowAnonymusMiddleware, User_controller.getUserFeed)
+user_router.get('/:user_id/commented-posts',User_controller.getUserCommentedPosts)
+user_router.get('/:user_id/liked-posts',User_controller.getUserLikedPosts)
+
 export default user_router

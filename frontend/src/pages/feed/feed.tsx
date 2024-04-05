@@ -46,7 +46,7 @@ export function Feed() {
                         <PostForm/>
                         <h2>Новые записи:</h2>
                         <div className="posts">
-                            {posts.map(post => <FeedPost {...post}/>)}
+                            {posts.map(post => <FeedPost {...post} updatePosts={getUserPosts}/>)}
                         </div>
                     </>
             }

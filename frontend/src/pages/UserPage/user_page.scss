@@ -64,6 +64,21 @@
     }
   }
 
+  .tab-switcher{
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    .active{
+      cursor: default;
+      border-color: $main-accent-color;
+      color: white;
+      background-color: $main-accent-color;
+    }
+  }
+
   #user-posts {
     h2 {
       text-align: center;
@@ -74,6 +89,23 @@
       padding: 5px;
       border: 2px solid $boder-color;
       border-top: 0;
+      position: relative;
+
+      #delete-post{
+        position: absolute;
+        top: 10px;
+        right: -30px;
+        cursor: pointer;
+        background: none;
+        font-size: 18px;
+        color: white;
+        border: none;
+
+        &:hover{
+          color: red;
+
+        }
+      }
 
       &:first-of-type {
         border: 2px solid $boder-color;

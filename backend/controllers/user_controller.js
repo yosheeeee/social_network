@@ -360,4 +360,37 @@ export default class User_controller {
             })
         }
     }
+
+    static async getUserLikedPosts(req,res){
+        try{
+            const user_id = req.params.user_id
+            let query_result = await User.getUserLikedPosts(user_id)
+            query_result = query_result.rows.length ? query_result.rows.filter(post => post.id != null) : []
+            return res.status(200).json({
+                posts:query_result
+            })
+        }catch(e){
+            console.log(e)
+            return res.status(400).json({
+                e: e.message,
+                function: 'getUserLikedPosts'
+            })
+        }
+    }
+    static async getUserCommentedPosts(req,res){
+        try{
+            const user_id = req.params.user_id
+            let query_result = await User.getUserCommentedPosts(user_id)
+            query_result = query_result.rows.length ? query_result.rows.filter(post => post.id != null) : []
+            return res.status(200).json({
+                posts:query_result
+            })
+        }catch(e){
+            console.log(e)
+            return res.status(400).json({
+                e: e.message,
+                function: 'getUserCommentedPosts'
+            })
+        }
+    }
 }

@@ -20,6 +20,46 @@ export default class Post_controller {
         }
     }
 
+    static async deletePost(req,res){
+        try{
+            const post_id = req.params.post_id
+            await Post.deletePost(post_id)
+            return res.status(200).json(
+                {
+                    message: "ok"
+                }
+            )
+        }catch(e){
+            console.log(e)
+            return res.status(400).json(
+                {
+                    e: e.message,
+                    function: "deletePost"
+                }
+            )
+        }
+    }
+
+    static async deleteComment(req,res){
+        try{
+            const comment_id = req.params.comment_id
+            await Post.deleteComment(comment_id)
+            return res.status(200).json(
+                {
+                    message: "ok"
+                }
+            )
+        }catch(e){
+            console.log(e)
+            return res.status(400).json(
+                {
+                    e: e.message,
+                    function: "deleteComment"
+                }
+            )
+        }
+    }
+
     static async getPostImages(req,res){
         try{
             const post_id = req.params.post_id

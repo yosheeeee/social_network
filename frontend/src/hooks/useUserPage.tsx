@@ -11,6 +11,10 @@ import draftToHtml from "draftjs-to-html";
 import PostStats, {IPostStats} from "../components/post-stats/postStats";
 import NewPostForm, {PostImages} from "../modules/new-post-form/newPost";
 import Loader from "../components/Loader/Loader";
+import FeedPost from "../components/feed-post/feedPost";
+import {Simulate} from "react-dom/test-utils";
+import click = Simulate.click;
+import Slider from "../components/Slider/slider";
 
 export type UserPageParams = {
     id: string | undefined
@@ -52,7 +56,8 @@ export default function useUserPage() {
         subscribings: 0
     })
     let [userImageSrc, setUserImageSrc] = useState("")
-    let [userPosts, setUserPosts] = useState<IUserPost[]>([])
+    let [userPosts, setUserPosts] = useState<IUserPost[] | IFeedPost[]>([])
+    let [currentTab, setCurrentTab] = useState('userPosts')
 
     //подгрузка данных о пользователе
     useEffect(() => {
@@ -72,12 +77,31 @@ export default function useUserPage() {
                 setUserImageSrc(data.file_src)
             })
         getUserPosts()
+        setCurrentTab('userPosts')
         setLoading(false)
     }, [userPageParams]);
 
+    // получение комментируемых постов
+    function getCommentedPosts(){
+        setLoading(true)
+        axios.get(BACKEND_PATH + `/user/${userPageParams.id}/commented-posts`)
+            .then(res => res.data.posts as IFeedPost[])
+            .then(data => setUserPosts(data))
+            .catch(e => console.log(e))
+            .finally(() => setLoading(false))
+    }
 
+    // получение лайкнутых постов
+    function getLikedPosts(){
+        setLoading(true)
+        axios.get(BACKEND_PATH + `/user/${userPageParams.id}/liked-posts`)
+            .then(res => res.data.posts as IFeedPost[])
+            .then(data => setUserPosts(data))
+            .catch(e => console.log(e))
+            .finally(() => setLoading(false))
+    }
 
-    //получение данных о пользователе с бека
+    //получение данных о пользователе с бека (постов пользователя)
     function getUserPosts() {
         axios.get(BACKEND_PATH + '/user/posts/' + userPageParams.id)
             .then(res => res.data.posts as IUserPost[])
@@ -180,6 +204,84 @@ export default function useUserPage() {
         )
     }
 
+    useEffect(() => {
+        switch (currentTab){
+            case "userPosts":
+                getUserPosts()
+                break
+            case "userLikedPosts":
+                getLikedPosts()
+                break
+            case "userCommentedPosts":
+                getCommentedPosts()
+                break
+        }
+    }, [currentTab]);
+
+    function CurrentTab(){
+        switch (currentTab){
+            case "userPosts":
+                return (
+                    <div id="user-posts">
+                        <h2>Записи пользователя:</h2>
+                        {userPosts.length == 0 ? <h3>Записи отсутстуют</h3> :
+                            userPosts.map(post => <PostTemplate {...post}/>)
+                        }
+                    </div>
+                )
+            case "userLikedPosts":
+                return (
+                    <div id="user-likes-posts">
+                        <h2>Понравившиеся записи:</h2>
+                        {userPosts.length == 0 ? <h3>Записи отсутстуют</h3> :
+                            userPosts.map(post => <FeedPost {...post as IFeedPost} updatePosts={getLikedPosts}/>)
+                        }
+                    </div>
+                )
+            case "userCommentedPosts":
+                return (
+                    <div id="user-commented-posts">
+                        <h2>Прокомментированные записи:</h2>
+                        {userPosts.length == 0 ? <h3>Записи отсутстуют</h3> :
+                            userPosts.map(post => <FeedPost {...post as IFeedPost} updatePosts={getCommentedPosts}/>)
+                        }
+                    </div>
+                )
+            default:
+                return (<></>)
+        }
+    }
+
+    function TabSwitcher(){
+        return (
+            <div className="tab-switcher">
+                <button className={'button rounded' + (currentTab == 'userPosts' ? ' active' : '')}
+                        onClick={() => {
+                            if (currentTab != 'userPosts') {
+                                setCurrentTab('userPosts')
+                            }
+                        }}>Посты
+                </button>
+                <button
+                    onClick={() => {
+                        if (currentTab != 'userLikedPosts') {
+                            setCurrentTab('userLikedPosts')
+                        }
+                    }}
+                    className={'button rounded' + (currentTab == 'userLikedPosts' ? ' active' : '')}>Лайки
+                </button>
+                <button className={'button rounded' + (currentTab == 'userCommentedPosts' ? ' active' : '')}
+                        onClick={() => {
+                            if (currentTab != 'userCommentedPosts') {
+                                setCurrentTab('userCommentedPosts')
+                            }
+                        }}
+                >Комментарии
+                </button>
+            </div>
+        )
+    }
+
     // Вывод кнопки подписаться/редактировать профиль в хедере страницы пользователя
     function HeaderButton() {
         return (
@@ -193,8 +295,62 @@ export default function useUserPage() {
         )
     }
 
+     function PostTemplate(post: IUserPost) {
+        const userPageParams = useParams<UserPageParams>()
+        const user = useTypeSelector(state => state.user)
+        let date = new Date(post.post_date)
+        let options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+            timezone: 'UTC',
+            hour: 'numeric',
+            minute: 'numeric',
+        };
 
-    return {userImageSrc, userData, PostForm, HeaderButton, loading, userPosts}
+        const [postImagesSrc, setPostImagesSrc] = useState<{ file_src: string }[]>([])
+
+        useEffect(() => {
+            axios.get(BACKEND_PATH + '/post/images/' + post.id)
+                .then(res => {
+                    console.log(res.data)
+                    return res.data.images
+                })
+                .then(images => setPostImagesSrc(images))
+        }, [post]);
+
+        return (
+            <div className='user-post'>
+                <div className="post-date">{`${date.getHours()}:${date.getMinutes()}`}, {date.toLocaleDateString("ru", {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long',
+                })}</div>
+                <div className='post-content'
+                     dangerouslySetInnerHTML={{__html: post.content}}></div>
+                {
+                    postImagesSrc.length ?
+
+                        <div className="post-images">
+                            <Slider elementsOnPage={3}>
+                                {postImagesSrc.map(image => <div><img src={BACKEND_PATH + '/static/' + image.file_src}
+                                                                      alt="post-image"/></div>)}
+                            </Slider>
+                        </div>
+                        :
+                        <>
+                        </>
+
+                }
+                <PostStats {...post}/>
+                {user.isLoggedIn && user.id.toString() == userPageParams.id && <RemovePost post_id={post.id} updatePosts={getUserPosts} user_token={user.token as string}/>}
+            </div>
+        )
+    }
+
+    return {userImageSrc, userData, PostForm, HeaderButton, loading, userPosts, CurrentTab ,TabSwitcher , PostTemplate}
 }
 
 // кнопка подписки на пользователя
@@ -267,5 +423,26 @@ function EditProfileButton() {
     return (
         <Link to={'/settings'}
               className="edit-profile-link button rounded accent-color">Редактировать профиль</Link>
+    )
+}
+
+export function RemovePost({user_token, post_id  , updatePosts} : {user_token: string, post_id : number, updatePosts : Function}){
+
+    function clickHandler(){
+        if (window.confirm("Вы действительно хотите удалить данный пост?")){
+            axios.delete(BACKEND_PATH + '/post/' + post_id,{
+                    headers: {
+                        Authorization: 'Bearer ' + user_token
+                    }
+                }
+            ).then(res => updatePosts())
+                .catch(e => console.log(e))
+        }
+    }
+
+    return (
+        <button id="delete-post" onClick={clickHandler}>
+            <i className="fa-solid fa-trash-can"></i>
+        </button>
     )
 }

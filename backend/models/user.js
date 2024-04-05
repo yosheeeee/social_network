@@ -135,6 +135,87 @@ export default class User {
         }
     }
 
+    static async getUserLikedPosts(user_id){
+        return await db.query(
+            `
+                SELECT posts.id                                           as id,
+                       posts.post_date                                    as post_date,
+                       posts.content                                      as content,
+                       COALESCE(likes_table.likes, 0)                     as likes,
+                       COALESCE(comments_table.comments, 0)               as comments,
+                       users.user_id                                      as user_id,
+                       users.user_name                                    as user_name,
+                       users.user_mail                                    as user_mail,
+                       users.user_login                                   as user_login,
+                       COALESCE(file_src, '/user_default_image.png')      as user_image_src,
+                       COALESCE(subscribers_table.subscribers_count, 0)   as subscribers,
+                       COALESCE(subscribings_table.subscribings_count, 0) as subscribings
+                FROM posts
+                         RIGHT JOIN post_likes ON posts.id = post_likes.post_id AND post_likes.user_id = $1
+                         LEFT JOIN (SELECT COUNT(*) as likes, post_id
+                                    FROM post_likes
+                                    GROUP BY post_id) as likes_table ON likes_table.post_id = posts.id
+                         LEFT JOIN (SELECT COUNT(*) as comments, post_id
+                                    FROM post_comments
+                                    GROUP BY post_comments.post_id) as comments_table
+                                   on posts.id = comments_table.post_id
+                         LEFT JOIN users ON posts.user_id = users.user_id
+                         LEFT JOIN files ON files.meta_value = posts.user_id AND files.meta_key = 'user_image'
+                         LEFT JOIN (SELECT COUNT(*) as subscribers_count, user_id_to as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_to) as subscribers_table
+                                   ON posts.user_id = subscribers_table.user_id
+                         LEFT JOIN (SELECT COUNT(*) as subscribings_count, user_id_from as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_from) as subscribings_table
+                                   ON posts.user_id = subscribings_table.user_id
+                GROUP BY id, post_date, content, likes, comments, users.user_id, user_name, user_mail, user_image_src,
+                         subscribers, subscribings
+                ORDER BY posts.post_date DESC
+            `
+        ,[user_id])
+    }
+
+    static async getUserCommentedPosts(user_id){
+        return await db.query(
+            `
+                SELECT posts.id                                           as id,
+                       posts.post_date                                    as post_date,
+                       posts.content                                      as content,
+                       COALESCE(likes_table.likes, 0)                     as likes,
+                       COALESCE(comments_table.comments, 0)               as comments,
+                       users.user_id                                      as user_id,
+                       users.user_name                                    as user_name,
+                       users.user_mail                                    as user_mail,
+                       users.user_login                                   as user_login,
+                       COALESCE(file_src, '/user_default_image.png')      as user_image_src,
+                       COALESCE(subscribers_table.subscribers_count, 0)   as subscribers,
+                       COALESCE(subscribings_table.subscribings_count, 0) as subscribings
+                FROM posts
+                         RIGHT JOIN post_comments ON posts.id = post_comments.post_id and post_comments.user_id = $1
+                         LEFT JOIN (SELECT COUNT(*) as likes, post_id
+                                    FROM post_likes
+                                    GROUP BY post_id) as likes_table ON likes_table.post_id = posts.id
+                         LEFT JOIN (SELECT COUNT(*) as comments, post_id
+                                    FROM post_comments
+                                    GROUP BY post_comments.post_id) as comments_table
+                                   on posts.id = comments_table.post_id
+                         LEFT JOIN users ON posts.user_id = users.user_id
+                         LEFT JOIN files ON files.meta_value = posts.user_id AND files.meta_key = 'user_image'
+                         LEFT JOIN (SELECT COUNT(*) as subscribers_count, user_id_to as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_to) as subscribers_table
+                                   ON posts.user_id = subscribers_table.user_id
+                         LEFT JOIN (SELECT COUNT(*) as subscribings_count, user_id_from as user_id
+                                    FROM user_subscribings
+                                    GROUP BY user_id_from) as subscribings_table
+                                   ON posts.user_id = subscribings_table.user_id
+                GROUP BY id, post_date, content, likes, comments, users.user_id, user_name, user_mail, user_image_src,
+                         subscribers, subscribings
+                ORDER BY posts.post_date DESC
+            `
+        ,[user_id])
+    }
 
     static async GetNotifications(user_id){
         let query_result = await db.query(`

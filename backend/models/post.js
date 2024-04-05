@@ -82,7 +82,8 @@ export default class Post {
                                       post_comments.user_id,
                                       COALESCE(files.file_src, '/user_default_image.png') as user_image,
                                       comment_date,
-                                      comment_content
+                                      comment_content,
+            comment_id 
                                FROM post_comments
                                         LEFT JOIN public.users ON post_comments.user_id = users.user_id
                                         LEFT JOIN public.files
@@ -115,5 +116,21 @@ export default class Post {
                 VALUES ($1, $2,$3,$4) 
             `,['comment', query_result.user_id, 'Лайк' , notification_content])
         }
+    }
+
+    static async deletePost(post_id){
+        await db.query(
+            `
+                DELETE FROM posts WHERE id = $1
+            `
+        ,[post_id])
+    }
+
+    static async deleteComment(comment_id){
+        await db.query(
+            `
+                DELETE FROM post_comments WHERE comment_id = $1
+            `
+        ,[comment_id])
     }
 }

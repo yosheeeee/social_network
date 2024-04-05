@@ -1,15 +1,20 @@
-// TODO: дописать эту хуету
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
-import {IFeedPost, IUserPost} from "../../hooks/useUserPage";
+import {IFeedPost, RemovePost} from "../../hooks/useUserPage";
 import PostStats from "../post-stats/postStats";
-import {PostImages} from "../../modules/new-post-form/newPost";
 import Slider from "../Slider/slider";
 import {Link} from "react-router-dom";
+import "./feedPost.scss"
+import {useTypeSelector} from "../../hooks/useTypeSelector";
 
 
-export default function FeedPost({post_date, id , content , likes , comments , user_image_src , user_login, user_mail , user_name,user_id } : IFeedPost){
+interface IFeedPostProps extends IFeedPost{
+    updatePosts: Function
+}
+
+export default function FeedPost({post_date, id , content , likes , comments , user_image_src , user_login, user_mail , user_name,user_id , updatePosts } : IFeedPostProps){
+    const user = useTypeSelector(state => state.user)
     let date = new Date(post_date)
     let options = {
         year: 'numeric',
@@ -33,7 +38,7 @@ export default function FeedPost({post_date, id , content , likes , comments , u
     }, [id]);
 
     return(
-        <div className="post">
+        <div className="feed-post">
             <div className="user-image">
                 <img src={BACKEND_PATH + '/static/'+user_image_src}
                      alt="user-image"/>
@@ -62,6 +67,8 @@ export default function FeedPost({post_date, id , content , likes , comments , u
             <PostStats likes={likes}
                        comments={comments}
                        id={id}/>
+
+            {user.isLoggedIn && user.id == user_id && <RemovePost post_id={id} updatePosts={updatePosts} user_token={user.token as string}/>}
         </div>
     )
 }

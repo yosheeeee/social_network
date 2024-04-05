@@ -4,16 +4,14 @@ import axios from "axios";
 import {BACKEND_PATH} from "../../constants";
 import Loader from "../Loader/Loader";
 import "./post-comments.scss"
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useHref, useNavigate, useParams} from "react-router-dom";
 import TextEditor from "../TextEditor";
 import {useTypeSelector} from "../../hooks/useTypeSelector";
 import {convertToRaw, EditorState} from "draft-js";
 import draftToHtml from "draftjs-to-html";
-import {futimes} from "node:fs";
-import {Simulate} from "react-dom/test-utils";
-import loadedData = Simulate.loadedData;
 
 interface CommentState {
+    comment_id: number
     user_name: string,
     user_id: number,
     user_image: string,
@@ -25,11 +23,11 @@ export default function PostComments() {
     const [commentsData, setCommentsData] = useState<CommentState[]>([])
     const [loading, setLoading] = useState(false)
     let {postId} = useParams()
-
+    const user = useTypeSelector(state => state.user)
     const navigate = useNavigate()
 
     useEffect(() => {
-            loadComments()
+        loadComments()
     }, []);
 
 
@@ -43,10 +41,36 @@ export default function PostComments() {
     }
 
 
-    function closePopup(elem : boolean){
+    function closePopup(elem: boolean) {
         navigate('..')
     }
 
+
+    function DeleteCommentButton({comment_id, user_id}: { comment_id: number, user_id: number }) {
+        function clickHandler() {
+            if (window.confirm("Вы действительно хотите удалить данный комментарий?")){
+                axios.delete(BACKEND_PATH + '/comments/' + comment_id,
+                    {
+                        headers: {
+                            Authorization: 'Bearer ' + user.token
+                        }
+                    })
+                    .then(res => loadComments())
+                    .catch(e => console.log(e))
+            }
+        }
+
+        if (user.isLoggedIn && user_id == user.id) {
+            return (
+                <button id="delete-comment"
+                        onClick={clickHandler}>
+                    <i className="fa-solid fa-trash-can"></i>
+                </button>
+            )
+        } else {
+            return (<></>)
+        }
+    }
 
     return (
         <Popup showPopup={true}
@@ -67,6 +91,8 @@ export default function PostComments() {
                             <div className="comment-content"
                                  dangerouslySetInnerHTML={{__html: commentData.comment_content}}>
                             </div>
+                            <DeleteCommentButton comment_id={commentData.comment_id}
+                                                 user_id={commentData.user_id}/>
                         </div>)}
                     </div>
                 </>
@@ -74,6 +100,7 @@ export default function PostComments() {
         </Popup>
     )
 }
+
 
 function AddComentForm({post_id, loadComments}: { post_id: number, loadComments: Function }) {
     const user = useTypeSelector(state => state.user)
@@ -109,5 +136,5 @@ function AddComentForm({post_id, loadComments}: { post_id: number, loadComments:
                 </div>
             )}
         </>
-)
+    )
 }
