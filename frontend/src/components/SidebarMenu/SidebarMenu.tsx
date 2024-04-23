@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./SidebarMenu.scss"
 import {NavLink} from "react-router-dom";
 import Logo from "../../images/main-logo.svg";

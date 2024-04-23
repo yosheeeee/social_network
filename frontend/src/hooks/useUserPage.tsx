@@ -110,99 +110,6 @@ export default function useUserPage() {
             })
     }
 
-    // форма добавления записи пользователя
-    function PostForm() {
-        const inputFileRef = useRef<HTMLInputElement>(null)
-        let [newPostState, setNewPostState] = useState(EditorState.createEmpty())
-        let newPostImagesState = useState<FileList | null>(null)
-
-        // функция отправки нового поста на бэк
-        function sendNewPostHandler() {
-            if (!newPostState.getCurrentContent().hasText()) return
-            let filesFormData = new FormData()
-            if (newPostImagesState[0] != null) {
-
-                for (let i = 0; i < newPostImagesState[0]?.length; i++) {
-                    filesFormData.append('post_file_' + i, newPostImagesState[0][i])
-                }
-            }
-            filesFormData.append('post_content', draftToHtml(convertToRaw(newPostState.getCurrentContent())))
-            axios.post(BACKEND_PATH + '/user/post',
-                filesFormData,
-                {
-                    headers: {
-                        Authorization: "Bearer " + user.token
-                    }
-                })
-                .then(res => res.data)
-                .then(data => {
-                    console.log(data)
-                    getUserPosts()
-                    setNewPostState(EditorState.createEmpty())
-                })
-                .catch(e => console.log(e.response))
-        }
-
-        function openFilesInput() {
-            // @ts-ignore
-            inputFileRef.current.click()
-        }
-
-        function changeInputFiles(e: ChangeEvent<HTMLInputElement>) {
-            if (e.target.files !== null && e.target.files.length > 10) {
-                alert('Максимальное количество файлов 10')
-                return
-            }
-            if (e.target.files !== null) {
-                for (let i = 0; i < e.target.files.length; i++) {
-                    if (!e.target.files[i].type.includes('image')) {
-                        alert(`Файл №${i + 1} не является изображениeм`)
-                        return
-                    }
-                }
-            }
-            newPostImagesState[1](e.target.files)
-        }
-
-        function clearImages() {
-            newPostImagesState[1](null)
-        }
-
-
-        return (
-            <>
-                {parseInt(userPageParams.id as string) == user.id && (
-                    <>
-                        <NewPostForm
-                            editorValue={newPostState}
-                            setEditorValue={setNewPostState}
-                        />
-                        <input type="file"
-                               name="post-files"
-                               id="post-files"
-                               accept=".png,.jpg,.jpeg,.gif"
-                               multiple={true}
-                               onChange={changeInputFiles}
-                               ref={inputFileRef}/>
-
-                        <PostImages images={newPostImagesState[0]}/>
-                        <div className="btns">
-                            <button className="button rounded post-files"
-                                    onClick={openFilesInput}><i className="fa-solid fa-images"></i></button>
-                            {newPostImagesState[0] !== null && <button className="rounded button"
-                                                                       onClick={clearImages}>
-                                <i className='fa-solid fa-xmark'></i>
-                            </button>}
-                            <button className={'button rounded'}
-                                    onClick={sendNewPostHandler}>Написать
-                            </button>
-                        </div>
-                    </>
-                )}
-            </>
-
-        )
-    }
 
     useEffect(() => {
         switch (currentTab){
@@ -350,7 +257,7 @@ export default function useUserPage() {
         )
     }
 
-    return {userImageSrc, userData, PostForm, HeaderButton, loading, userPosts, CurrentTab ,TabSwitcher , PostTemplate}
+    return {userImageSrc, userData, HeaderButton, loading, userPosts, CurrentTab ,TabSwitcher , PostTemplate, getUserPosts}
 }
 
 // кнопка подписки на пользователя
